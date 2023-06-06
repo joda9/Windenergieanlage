@@ -1,0 +1,3 @@
+Rauhigkeitslänge [-]	0.02
+Nabenhöhe [m]	80
+Mindesleistung [W]	5000
