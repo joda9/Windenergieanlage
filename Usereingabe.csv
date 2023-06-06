@@ -1,4 +1,2 @@
-﻿Column1;Column2;Column3
-Rauhigkeitslänge;[-];2
-Nabenhoehe;[m];80
-Mindesleistung;[W];5000
+﻿Rauhigkeitslaenge [-];Nabenhoehe [m];Mindesleistung [W]
+2;80;5000
