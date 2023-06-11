@@ -1,0 +1,3 @@
+	Enercon_E44_900	Enercon_E48_800	Enercon_E53_800	Enercon_E70_2300	Enercon_E82_2000	Enercon_E82_2300	Enercon_E82_3000	Enercon_E92_2350	Enercon_E126_7500	GE_2.5xl	Vestas_V90_2000	Vestas_V100_2000	Vestas_V110_2000	XANT_M21_100
+Nennleistung in MW	0.9	0.8	0.8	2.3	2	2.3	3	2.35	7.58	2.5	2	2	2	0.1
+Rotordurchmesser in m	44	48	52.9	71	82	82	82	92	127	120	90	100	110	21
