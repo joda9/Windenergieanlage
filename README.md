@@ -11,3 +11,7 @@ Damit eine neue virtuelle Umgebung aufgesetzt wird geh zunächst in den Ordner W
 Führe folgenden Befehl aus, um die virtuelle Umgebung zu erstellen.
 
 `conda env create -f environment.yml`
+
+Anschließend die virtuelle Umgebung aktivieren mit:
+
+'conda activate WEA'
