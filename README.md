@@ -14,4 +14,4 @@ Führe folgenden Befehl aus, um die virtuelle Umgebung zu erstellen.
 
 Anschließend die virtuelle Umgebung aktivieren mit:
 
-'conda activate WEA'
+`conda activate WEA`
