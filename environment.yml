@@ -1,0 +1,16 @@
+name: WEA
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pandas
+  - jupyter
+  - pip
+  - python
+  - matplotlib
+  - pip:
+    - windrose
+    - reliability
+    - DateTime
+    - tk
+    - scipy
