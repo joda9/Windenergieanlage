@@ -1,8 +1,9 @@
 name: WEA
-#channels:
-#  - conda-forge
-#  - defaults
+channels:
+  - conda-forge
+  - defaults
 dependencies:
+  - pandas
   - jupyter
   - pip
   - python
@@ -13,7 +14,3 @@ dependencies:
     - DateTime
     - tk
     - scipy
-    - locale
-
-
-
