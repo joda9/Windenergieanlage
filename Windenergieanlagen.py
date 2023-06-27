@@ -333,7 +333,7 @@ def max_consecutive_no_power(data, turbine_columns, p_min, Daten_WKA_df):
     return max_consecutive_df
 
 # Aufrufen der Funktion
-p_min = mindestleistung / 1000000 # Grenzwert für die Stromerzeugung in MW
+p_min = required_power / 1000000 # Grenzwert für die Stromerzeugung in MW
 hours_without_power_df = max_consecutive_no_power(winddaten_df, turbine_list, p_min, Daten_WKA_df)
 hours_without_power_df['Gesamtkosten in T€'] = (hours_without_power_df['Kosten WEA'] + hours_without_power_df['Kosten_Batterie_Euro']) / 1000
 hours_without_power_df
