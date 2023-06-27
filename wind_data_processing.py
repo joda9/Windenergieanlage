@@ -2,6 +2,10 @@ import pandas as pd
 import numpy as np
 from scipy.optimize import curve_fit
 
+"""
+In diesem Modul befinden sich die Funktionen für die Verarbeitung der Winddaten.
+"""
+
 def adjust_wind_speed(wind_speed, hub_height, roughness_length):
     adjusted_speed = wind_speed * (np.log(hub_height / roughness_length) / np.log(10 / roughness_length))
     return adjusted_speed
