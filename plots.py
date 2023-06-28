@@ -88,7 +88,6 @@ plt.title('Weibull-Verteilung der Windgeschwindigkeiten')
 plt.legend()
 plt.show()
 
-# Ausgabe der Weibull-Faktoren
 print('Weibull-Verteilungsfaktoren:')
 print('Formfaktor (Shape):', shape)
 print('Lagefaktor (Location):', loc)
