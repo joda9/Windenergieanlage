@@ -8,19 +8,25 @@ und es soll eine Funktion am Ende sein, welches später nur noch aufgerufen wird
 Die Input Daten hier sollen dann nicht mehr im Modul stehen.
 '''
 
-# Winddaten einlesen
-data_wind = pd.read_csv(r'data/produkt_ff_stunde_20211202_20230430_00125.txt', delimiter=';')
-data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
-data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
-
-# Leistungskurven und technischen Daten der KWEA einlesen
-data_power_curve = pd.read_csv(r'data/Leistungskurven.txt', delimiter='\t')
-data_wind_tech = pd.read_csv(r'data/Daten_WKA.txt', delimiter='\t')
-
-# Turbinennamen bereinigen
-turbine_list = data_power_curve.columns[1:].str.strip().tolist()
-
 # Berechnung der Mindesakkugröße und Bestimmung der Kosten für den Akku
+def calculate_total_energy(data, turbine_columns):
+    """
+    Funktion zur Berechnung des Gesamtenergieertrags für jede Windkraftanlage
+    über den betrachtetem Zeitraum in MWh.
+
+    Args:
+        data (DataFrame): DataFrame mit den data_wind.
+        turbine_columns (list): Liste der Spalten, die die Windkraftanlagen identifizieren.
+
+    Returns:
+        DataFrame: DataFrame mit dem Gesamtenergieertrag für jede Windkraftanlage.
+    """
+    total_energy = {}
+    for turbine_column in turbine_columns:
+        total_energy[turbine_column] = data[turbine_column].sum()
+
+    return pd.DataFrame({'Turbine': list(total_energy.keys()), 'TotalEnergy in MWh': list(total_energy.values())})
+
 def max_consecutive_no_power(data, turbine_columns, p_min, data_wind_tech):
     """
     Funktion zur Ermittlung der maximalen Zeit, in der hintereinander kein Strom von jeder Windkraftanlage erzeugt wird.
@@ -55,6 +61,17 @@ def max_consecutive_no_power(data, turbine_columns, p_min, data_wind_tech):
 
     return max_consecutive_df
 
+# Winddaten einlesen
+data_wind = pd.read_csv(r'data/produkt_ff_stunde_20211202_20230430_00125.txt', delimiter=';')
+data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
+data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
+
+# Leistungskurven und technischen Daten der KWEA einlesen
+data_power_curve = pd.read_csv(r'data/Leistungskurven.txt', delimiter='\t')
+data_wind_tech = pd.read_csv(r'data/Daten_WKA.txt', delimiter='\t')
+
+# Turbinennamen bereinigen
+turbine_list = data_power_curve.columns[1:].str.strip().tolist()
 #Dummy für mindestleistung
 mindestleistung = 100
 
@@ -63,25 +80,6 @@ p_min = mindestleistung / 1000000 # Grenzwert für die Stromerzeugung in MW
 hours_without_power_df = max_consecutive_no_power(data_wind, turbine_list, p_min, data_wind_tech)
 hours_without_power_df['Gesamtkosten in T€'] = (hours_without_power_df['Kosten WEA'] + hours_without_power_df['Kosten_Batterie_Euro']) / 1000
 hours_without_power_df
-
-
-def calculate_total_energy(data, turbine_columns):
-    """
-    Funktion zur Berechnung des Gesamtenergieertrags für jede Windkraftanlage
-    über den betrachtetem Zeitraum in MWh.
-
-    Args:
-        data (DataFrame): DataFrame mit den data_wind.
-        turbine_columns (list): Liste der Spalten, die die Windkraftanlagen identifizieren.
-
-    Returns:
-        DataFrame: DataFrame mit dem Gesamtenergieertrag für jede Windkraftanlage.
-    """
-    total_energy = {}
-    for turbine_column in turbine_columns:
-        total_energy[turbine_column] = data[turbine_column].sum()
-
-    return pd.DataFrame({'Turbine': list(total_energy.keys()), 'TotalEnergy in MWh': list(total_energy.values())})
 
 # Beispielaufruf der Funktion
 total_energy = calculate_total_energy(data_wind, turbine_list)
