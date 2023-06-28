@@ -9,7 +9,6 @@ In diesem Modul wird de Code für die Benutzer*innenfläche beschrieben.
 # Create a tkinter window
 window = tk.Tk()
 
-
 # Define function to process the inputs
 def process_inputs():
     global alpha, z0, h, required_power, option, file_name
