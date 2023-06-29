@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
-from interface import *
+import pandas as pd
+# from interface import *
 from wind_data_processing import *
 
 
@@ -12,13 +12,13 @@ Daten einlesen und modifizieren.
 """
 
 # Wetterdaten einlesen
-data_wind = pd.read_csv(r'data/produkt_ff_stunde_20211202_20230430_00125.txt', delimiter=';')
+data_wind = pd.read_csv(r'data/Wetterdaten_Wanna_Szenario_1.txt', delimiter=';')
 data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
 data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
 
 # Leistungskurven und technischen Daten der KWEA einlesen
-data_power_curve = pd.read_csv(r'data/Leistungskurven.txt', delimiter='\t')
-data_wind_tech = pd.read_csv(r'data/Daten_WKA.txt', delimiter='\t')
+data_power_curve = pd.read_csv(r'data/powercurves.csv', encoding="ISO-8859-1")
+data_tech = pd.read_csv(r'data/technical_information.csv', encoding="ISO-8859-1").set_index(['Turbine'])
 
 # Multipliziere data_wind mit den entsprechenden Faktoren für jede Turbine
 hub_height = 80.0  # Eingabe kommt aus dem GUI TODO: Verbindung zum GUI herstellen
@@ -27,10 +27,12 @@ roughness_length = 0.1  # Eingabe kommt aus dem GUI TODO: Verbindung zum GUI her
 #TODO: Datensatz extra einlesen wäre besser, dann in Funktion fit_power_curve()
 # Parameter windgeschwindigkeit und Leistung auswähelen
 
-data_wind['Nordex'] = fit_power_curve(data_wind['F'],
+data_wind[data_power_curve.columns[1]] = fit_power_curve(data_wind['F'],
                                       hub_height,
                                       roughness_length,
-                                      'data/Leistungskurve Nordex N29.csv')
+                                      data_tech,
+                                      data_power_curve.columns[1],
+                                      data_power_curve)
 
 # Turbinennamen bereinigen
 turbine_list = data_power_curve.columns[1:].str.strip().tolist()

@@ -10,39 +10,28 @@ def adjust_wind_speed(wind_speed, hub_height, roughness_length):
     adjusted_speed = wind_speed * (np.log(hub_height / roughness_length) / np.log(10 / roughness_length))
     return adjusted_speed
 
-def fit_power_curve(wind_speeds, hub_height, roughness_length, csv_file):
-    # CSV-Datei einlesen
-    df = pd.read_csv(csv_file, delimiter=";")
-
+def fit_power_curve(wind_speeds, hub_height, roughness_length, data_tech, turbine, data_power_curve):
+    
+    cut_in = float(data_tech[data_tech.index.str.startswith(turbine)]['Cut-in wind speed:'][0].replace(',','').split()[0])
+    cut_out = float(data_tech[data_tech.index.str.startswith(turbine)]['Cut-out wind speed:'][0].replace(',','').split()[0])
+    rated_power = float(data_tech[data_tech.index.str.startswith(turbine)]['Rated power:'][0].replace(',','').split()[0])
+    rated_wind = float(data_tech[data_tech.index.str.startswith(turbine)]['Rated wind speed:'][0].replace(',','').split()[0])
     # Funktion definieren
-    def power_function(x, a, b, c, d):
-        y = np.zeros_like(x)
-        y = np.where(x < 3, 0, y)
-        y = np.where((x >= 3) & (x <= 15), a * np.power(x, 3) + b * np.power(x, 2) + c * x + d, y)
-        y = np.where((x > 15) & (x <= 25), 250, y)
-        y = np.where(x > 25, 0, y)
+    def power_function(wind_speed, cut_in, cut_out, rated_power, rated_wind):
+        y = np.zeros_like(wind_speed)
+        y = np.where(wind_speed < cut_in, 0, y)
+        y = np.where((wind_speed < cut_out) & (wind_speed > rated_wind), rated_power, y)
+        y = np.where((wind_speed > cut_in) & (wind_speed < rated_wind), rated_power, y)
+        
+        y = np.where(wind_speed > cut_out, 0, y)
+        
         return y
-
-    # Fit durchführen
-    x_data = df["Windgeschwindigkeit (ms)"]
-    y_data = df["Leistung (kW)"]
-
-    # Randbedingungen
-    a_init = (0 - 250) / np.power(3, 3)
-    b_init = 0
-    c_init = (250 - 0) / 15
-    d_init = 0
-
-    popt, _ = curve_fit(power_function, x_data, y_data, p0=[a_init, b_init, c_init, d_init])
-
-    # Funktion mit Fit-Parametern erstellen
-    def fitted_function(x):
-        return power_function(x, *popt)
-
-    # Windgeschwindigkeit anpassen
-    adjusted_wind_speeds = adjust_wind_speed(wind_speeds, hub_height, roughness_length)
-
-    # Leistung für angepasste Windgeschwindigkeiten berechnen
-    power_outputs = fitted_function(adjusted_wind_speeds)
-
+    power_outputs = power_function(wind_speeds, cut_in, cut_out, rated_power, rated_wind)
+    print(power_outputs)
+    
+    
+    
+    
+    
+    
     return power_outputs
