@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from interface import *
 from wind_data_processing import *
-
+from calc_lcoe import *
 
 """
 Daten einlesen und modifizieren.
