@@ -1,8 +1,9 @@
 import pandas as pd
 
-
 def calc_flh_cap_factor(installed_cap, annual_yield):
     """
+    Calculates full load hours and also capacity factor
+    of wind turbine
 
     :parameter
     installed_cap: installed nominal capacity in kW.
