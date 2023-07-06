@@ -2,6 +2,39 @@ import pandas as pd
 import numpy as np
 from scipy.optimize import curve_fit
 from tqdm import tqdm
+import locale
+
+
+def preprocess_power_curves(input_file, output_file):
+    """
+    Verarbeitet die Leistungskurven-Daten durch Erweiterung des Index, Interpolation von fehlenden Werten
+    und speichert die vorverarbeiteten Daten in einer neuen Datei.
+    
+    Args:
+        input_file (str): Pfad zur Eingabedatei mit den Leistungskurven-Daten.
+        output_file (str): Pfad zur Ausgabedatei für das Speichern der vorverarbeiteten Daten.
+    """
+    # Lokales Datumsformat auf Deutsch setzen
+    locale.setlocale(locale.LC_TIME, "de_DE.utf8")
+
+    # Leistungskurven-Daten einlesen
+    winddaten_df = pd.read_csv(input_file, encoding="ISO-8859-1").set_index(['wind_speed'])
+
+    # Index in 0,01-Schritten bis zu 100 erweitern
+    new_index = np.arange(0, 100.01, 0.01)
+
+    # DataFrame neu indexieren und fehlende Werte mit NaN auffüllen
+    winddaten_df = winddaten_df.reindex(new_index, fill_value=np.nan)
+
+    # Fehlende Werte mit linearer Interpolation interpolieren
+    winddaten_df = winddaten_df.interpolate(method='linear')
+
+    # Verbleibende NaN-Werte mit 0 auffüllen
+    winddaten_df_filled = winddaten_df.fillna(0)
+
+    # Vorverarbeitete Daten in eine neue Datei speichern
+    winddaten_df_filled.to_csv(output_file)
+
 
 def adjust_wind_speed(wind_speed, hub_height, roughness_length):
     """
