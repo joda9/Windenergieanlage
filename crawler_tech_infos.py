@@ -26,7 +26,7 @@ def read_technical_information(url):
             rows = tab_content.find_all("div", {"class": "row"})
 
             # Leeres DataFrame erstellen
-            data = []
+            data = [] 
 
             # Durch die Datenzeilen iterieren und Werte extrahieren
             for row in rows:
