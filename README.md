@@ -48,44 +48,9 @@ Parameter:
 Beispielaufruf:
 preprocess_power_curves('input.csv', 'output.csv')
 
-## Funktion: adjust_wind_speed
-
-Passt die Windgeschwindigkeit anhand der Nabenhöhe und Rauhigkeitslänge an.
-
-Parameter:
-- `wind_speed` (float): Windgeschwindigkeit.
-- `hub_height` (float): Nabenhöhe der Windenergieanlage.
-- `roughness_length` (float): Rauhigkeitslänge.
-
-Rückgabewert:
-- `adjusted_speed` (float): Angepasste Windgeschwindigkeit.
-
-Beispielaufruf:
-adjusted_speed = adjust_wind_speed(10.0, 80.0, 0.1)
-print(adjusted_speed)
-
-## Funktion: fit_power_curve
-
-Passt die Leistungskurve anhand der Windgeschwindigkeiten an.
-
-Parameter:
-- `wind_speeds` (Series): Windgeschwindigkeiten.
-- `hub_height` (float): Nabenhöhe der Windenergieanlage.
-- `roughness_length` (float): Rauhigkeitslänge.
-- `data_tech` (DataFrame): Technische Daten der Windenergieanlage.
-- `turbine` (str): Name der Turbine.
-- `data_power_curve` (DataFrame): Leistungskurve der Windenergieanlage.
-
-Rückgabewert:
-- `power_outputs` (list): Liste der Leistungswerte.
-
-Beispielaufruf:
-power_outputs = fit_power_curve(wind_speeds, 80.0, 0.1, data_tech, 'Turbine1', data_power_curve)
-print(power_outputs)
-
 ## Funktion: process_data
 
-Verarbeitet Winddaten und passt die Leistungskurve an.
+Verarbeitet stündliche Winddaten und fügt für jede Turbine eine Leistung für die entsprechende Windgeschwindigkeit hinzu
 
 Parameter:
 - `data_wind_path` (str): Dateipfad zu den Wetterdaten.
