@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg 
 from wind_data_processing import * 
+
 """
 Winddaten sowie technische Daten der Turbinen und Leistungskurven einlesen
 Anschließend werden aus den Daten die Leistungen der Turbinen stundengenau ermittelt
