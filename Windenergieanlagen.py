@@ -9,7 +9,7 @@ Anschließend werden aus den Daten die Leistungen der Turbinen stundengenau ermi
 data_wind_path = r'data/Wetterdaten_Wanna_Szenario_1.txt'  # Dateipfad zu den Wetterdaten
 save_path_powerdata = r'data/Wetterdaten_Wanna_Szenario_1.xlsx'     # Dateipfad zur Speicherung der Daten in einer xlsx
 data_power_curve_path = r'data/powercurves_interpolated.csv'  # Dateipfad zur Leistungskurve
-data_tech_path = r'data/technical_information.xlsx'  # Dateipfad zu den technischen Daten
+data_tech_path = r'data/technical_information_new.xlsx'  # Dateipfad zu den technischen Daten
 
 hub_height = 80.0  # Nabenhöhe der Windenergieanlage
 roughness_length = 0.1  # Rauhigkeitslänge
