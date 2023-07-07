@@ -14,3 +14,6 @@ dependencies:
     - DateTime
     - tk
     - scipy
+    - tqdm
+    - requests
+    - bs4
