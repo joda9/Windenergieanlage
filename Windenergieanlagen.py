@@ -1,7 +1,7 @@
-import matplotlib.pyplot as plt  # Importieren der matplotlib.pyplot-Bibliothek für Visualisierungen
-import matplotlib.dates as mdates  # Importieren des mdates-Moduls aus matplotlib für die Arbeit mit Datumsformaten
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg  # Importieren der FigureCanvasTkAgg-Klasse aus matplotlib.backends für die Integration in Tkinter
-from wind_data_processing import *  # Importieren der Funktionen aus der Datei wind_data_processing_new
+import matplotlib.pyplot as plt  
+import matplotlib.dates as mdates 
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg 
+from wind_data_processing import * 
 """
 Winddaten sowie technische Daten der Turbinen und Leistungskurven einlesen
 Anschließend werden aus den Daten die Leistungen der Turbinen stundengenau ermittelt
