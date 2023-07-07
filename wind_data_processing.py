@@ -69,10 +69,16 @@ def fit_power_curve(wind_speeds, hub_height, roughness_length, data_tech, turbin
         list: Liste der Leistungswerte.
     """
 
-    cut_in = float(data_tech[data_tech.index.str.startswith(turbine)]['Cut-in wind speed:'][0].replace(',','').split()[0])  # Einschaltdrehzahl der Windenergieanlage
-    cut_out = float(data_tech[data_tech.index.str.startswith(turbine)]['Cut-out wind speed:'][0].replace(',','').replace('-','').split()[0])  # Abschaltdrehzahl der Windenergieanlage
-    rated_power = float(data_tech[data_tech.index.str.startswith(turbine)]['Rated power:'][0].replace(',','').split()[0])  # Nennleistung der Windenergieanlage
-    rated_wind = float(data_tech[data_tech.index.str.startswith(turbine)]['Rated wind speed:'][0].replace(',','').split()[0])  # Nennwindgeschwindigkeit der Windenergieanlage
+    # cut_in = float(data_tech[data_tech.index.str.startswith(turbine)]['Cut-in wind speed:'][0].replace(',','').split()[0])  # Einschaltdrehzahl der Windenergieanlage
+    # cut_out = float(data_tech[data_tech.index.str.startswith(turbine)]['Cut-out wind speed:'][0].replace(',','').replace('-','').split()[0])  # Abschaltdrehzahl der Windenergieanlage
+    # rated_power = float(data_tech[data_tech.index.str.startswith(turbine)]['Rated power:'][0].replace(',','').split()[0])  # Nennleistung der Windenergieanlage
+    # rated_wind = float(data_tech[data_tech.index.str.startswith(turbine)]['Rated wind speed:'][0].replace(',','').split()[0])  # Nennwindgeschwindigkeit der Windenergieanlage
+    
+    
+    cut_in = float(data_tech['Cutin wind speed:'][data_tech.index.str.startswith(turbine)])    # Einschaltdrehzahl der Windenergieanlage
+    cut_out = float(data_tech['Cutout wind speed:'][data_tech.index.str.startswith(turbine)])  # Abschaltdrehzahl der Windenergieanlage
+    rated_power = float(data_tech['Rated power:'][data_tech.index.str.startswith(turbine)])  # Nennleistung der Windenergieanlage
+    rated_wind = float(data_tech['Rated wind speed:'][data_tech.index.str.startswith(turbine)])  # Nennwindgeschwindigkeit der Windenergieanlage
     
     def power_function(wind_speeds, cut_in, cut_out, rated_power, rated_wind, data_power_curve):
         """
