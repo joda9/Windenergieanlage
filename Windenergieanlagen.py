@@ -1,36 +1,28 @@
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt  
+import matplotlib.dates as mdates 
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg 
+from wind_data_processing import * 
+"""
+Winddaten sowie technische Daten der Turbinen und Leistungskurven einlesen
+Anschließend werden aus den Daten die Leistungen der Turbinen stundengenau ermittelt
+"""
+data_wind_path = r'data/Wetterdaten_Wanna_Szenario_1.txt'  # Dateipfad zu den Wetterdaten
+save_path_powerdata = r'data/Wetterdaten_Wanna_Szenario_1.xlsx'     # Dateipfad zur Speicherung der Daten in einer xlsx
+data_power_curve_path = r'data/powercurves_interpolated.csv'  # Dateipfad zur Leistungskurve
+data_tech_path = r'data/technical_information.xlsx'  # Dateipfad zu den technischen Daten
 
-from interface import *
-from wind_data_processing import *
+hub_height = 80.0  # Nabenhöhe der Windenergieanlage
+roughness_length = 0.1  # Rauhigkeitslänge
+
+data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, hub_height, roughness_length)
+data_wind.to_excel(save_path_powerdata)
+# Verarbeitung der Winddaten und Anpassung der Leistungskurve
+
 
 
 """
-Daten einlesen und modifizieren.
 
 """
-
-# Wetterdaten einlesen
-data_wind = pd.read_csv(r'data/produkt_ff_stunde_20211202_20230430_00125.txt', delimiter=';')
-data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
-data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
-
-# Leistungskurven und technischen Daten der KWEA einlesen
-data_power_curve = pd.read_csv(r'data/Leistungskurven.txt', delimiter='\t')
-data_wind_tech = pd.read_csv(r'data/Daten_WKA.txt', delimiter='\t')
-
-# Multipliziere data_wind mit den entsprechenden Faktoren für jede Turbine
-hub_height = 80.0  # Eingabe kommt aus dem GUI TODO: Verbindung zum GUI herstellen
-roughness_length = 0.1  # Eingabe kommt aus dem GUI TODO: Verbindung zum GUI herstellen
-
-#TODO: Datensatz extra einlesen wäre besser, dann in Funktion fit_power_curve()
-# Parameter windgeschwindigkeit und Leistung auswähelen
-
-data_wind['Nordex'] = fit_power_curve(data_wind['F'],
-                                      hub_height,
-                                      roughness_length,
-                                      'data/Leistungskurve Nordex N29.csv')
 
 # Turbinennamen bereinigen
 turbine_list = data_power_curve.columns[1:].str.strip().tolist()
