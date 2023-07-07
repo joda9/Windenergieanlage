@@ -18,7 +18,7 @@ Anschließend die virtuelle Umgebung aktivieren mit:
 
 # Vorverarbeitung von Leistungskurven
 
-Zunächst werden die Daten aus der Datenbank von eind-turbine-models.com geladen
+Zunächst werden die Daten aus der Datenbank von https://wind-turbine-models.com geladen
 
 
 ## Funktion: add_website_titles
