@@ -48,6 +48,7 @@ Parameter:
 Beispielaufruf:
 preprocess_power_curves('input.csv', 'output.csv')
 
+# Verarbeitung der Wind- und Leistungsdaten für einen Standort 
 ## Funktion: process_data
 
 Verarbeitet stündliche Winddaten und fügt für jede Turbine eine Leistung für die entsprechende Windgeschwindigkeit hinzu
