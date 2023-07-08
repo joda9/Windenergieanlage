@@ -73,14 +73,14 @@ def calculate_lcoe(inv_costs,yearly_costs,yearly_yield, interest_rate, lifetime)
     for year in range(1, lifetime + 1):
         present_costs = yearly_costs / (1 + interest_rate) ** year
         present_yield = yearly_yield / (1 + interest_rate) ** year
-
         data['Annual Costs'].append(present_costs)
         data['Annual Yield'].append(present_yield)
 
     df = pd.DataFrame(data, index=range(1, lifetime + 1))
     lcoe = (inv_costs + df['Annual Costs'].sum()) / df['Annual Yield'].sum()
+    df.loc[1, 'LCOE'] = lcoe
 
-    return df, round(lcoe, 2)
+    return df
 
 
 def append_costs_df(capex,wt_name):
@@ -130,4 +130,7 @@ def append_costs_df(capex,wt_name):
 
 nordex_n29= append_costs_df(capex=4500,
                        wt_name='Nordex N29')
+
+nordex_n29.to_excel('data/annuity_nordex_n29.xlsx')
+
 print(nordex_n29)
