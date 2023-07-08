@@ -14,10 +14,9 @@ window = tk.Tk()
 source_wd = 'DWD'
 econ_view = "Nein"
 # Define function to process the inputs
-def process_inputs():
-    global alpha, z0, h_mess, h_soll, required_power, file_name, econ_view #z0,source_wd, 
+def process_inputs(): # type: ignore
+    global z0, h_mess, h_soll, required_power, file_name, econ_view 
 
-    alpha = float(entry_alpha.get())
     z0 = float(entry_z0.get())
     h_soll = float(entry_h_soll.get())
     h_mess = float(entry_h_mess.get())
@@ -26,16 +25,14 @@ def process_inputs():
     file_name = entry_file_name.get()
     econ_view = combo_econ_view.get()
 
-
-
-
-
-    if alpha < 0 or alpha > 1:
-        messagebox.showerror("Ungültige Eingabe", "Der Wert von α muss positiv sein")
+   
+    if z0 < 0:
+        messagebox.showerror("Ungültige Eingabe", "Der Wert von z0 muss positiv sein")
         return
     
-    if z0 < 0 or z0 > 1:
-        messagebox.showerror("Ungültige Eingabe", "Der Wert von z0 muss positiv sein")
+
+    if z0 > 2:
+        messagebox.showerror("Ungültige Eingabe", "Der Wert von z0 ist zu groß")
         return
 
 
@@ -51,13 +48,12 @@ def process_inputs():
         messagebox.showerror("Ungültige Eingabe", "Die gewünschte Leistung muss zwischen 0 und 250 kW liegen.")
         return
 
-    if not alpha or not h_soll or not h_mess or not required_power or not source_wd or not file_name or not econ_view:
+    if not z0 or not h_soll or not h_mess or not required_power or not source_wd or not file_name or not econ_view:
         messagebox.showerror("Unvollständige Eingabe", "Bitte alle Felder ausfüllen.")
         return
 
     try:
-        alpha = float(alpha)
-        z0 = float(alpha)
+        z0 = float(z0)
         h_soll = float(h_soll)
         h_mess = float(h_mess)
         required_power = float(required_power)
@@ -73,13 +69,29 @@ def process_inputs():
 
     window.destroy()  
 
+    values = {
+        "z0": z0,
+        "h_mess": h_mess,
+        "h_soll": h_soll,
+        "required_power": required_power,
+        "Costs": Costs,
+        "interest": interest,
+        "duration": duration
+    }
+
+    #if source_wd == 'DWD':
+    data_wind = pd.read_csv(file_name, delimiter=';')
+    data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
+    data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
+    #elif source_wd == 'Global Wind Atlas':
+    #    data_wind = pd.read_csv(file_name, delimiter=',')
+    #    data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
+    #    data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
+
+    return values, data_wind
+
 
 # Create labels and entry fields for inputs
-label_alpha = tk.Label(window, text="α (Höhenwindexponent)[-]:")
-label_alpha.pack()
-entry_alpha = tk.Entry(window)
-entry_alpha.pack()
-
 label_z0 = tk.Label(window, text="z0 (Rauhigkeitslänge)[m]:")
 label_z0.pack()
 entry_z0 = tk.Entry(window)
@@ -149,6 +161,7 @@ if econ_view == "Ja":
                 messagebox.showerror("Ungültige Eingabe", "Planungsdauer muss positiv sein.")
                 return
             
+
             try:
                 Costs = float(Costs)
                 interest = float(interest)
@@ -162,6 +175,12 @@ if econ_view == "Ja":
             if not Costs or not interest or not duration:
                 messagebox.showerror("Fehlende Eingabe", "Bitte alle Felder ausfüllen.")
                 return
+            
+            # Check if the window is closed without entering data
+            window.protocol("WM_DELETE_WINDOW",
+                lambda: messagebox.showerror("Fehlende Eingabe", "Bitte alle Felder ausfüllen."))
+
+
             window.destroy()
 
 
@@ -190,27 +209,23 @@ if econ_view == "Ja":
         # Run the tkinter event loop
         window.mainloop()
 
-#        if all((Costs, interest, duration)):
-#            messagebox.showinfo("Eingabe Erfolgreich", "Variablenwerte wurden eingegeben")
-
-        window.destroy()
 
 # Show a confirmation message
-if all((alpha, z0, h_soll, h_mess, required_power, source_wd, file_name, econ_view)):
+if all((z0, h_soll, h_mess, required_power, source_wd, file_name, econ_view)):
     messagebox.showinfo("Eingabe Erfolgreich", "Variablenwerte wurden eingegeben")
 
-window.destroy()
 
-if source_wd == 'DWD':
+
+#if source_wd == 'DWD':
     #data_wind = pd.read_csv(r'data/produkt_ff_stunde_20211202_20230430_00125.txt', delimiter=';')
-    data_wind = pd.read_csv(file_name, delimiter=';')
-    data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
-    data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
+#    data_wind = pd.read_csv(file_name, delimiter=';')
+#    data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
+#    data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
 
-elif source_wd == 'Global Wind Atlas':
-    data_wind = pd.read_csv(file_name, delimiter=',')
-    data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
-    data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
+#elif source_wd == 'Global Wind Atlas':
+#    data_wind = pd.read_csv(file_name, delimiter=',')
+#    data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
+ #   data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
 
 
 

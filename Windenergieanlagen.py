@@ -1,20 +1,29 @@
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import ttk
+import importlib
 
-from interface import *
+import interface
+importlib.reload(interface)
+#from interface import *
 from wind_data_processing import *
 
 
 """
 Daten einlesen und modifizieren.
-
 """
+values, data_wind = interface.process_inputs() # type: ignore
 
-# Wetterdaten einlesen    Passiert genau so in der GUI, Datei muss in den Grundordner abgelegt werden. vgl datei a.txt
-#data_wind = pd.read_csv(r'data/produkt_ff_stunde_20211202_20230430_00125.txt', delimiter=';')
-#data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
-#data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
+z0 = values["z0"]
+h_mess = values["h_mess"]
+h_hub = values["h_soll"]
+required_power = values["required_power"]
+Costs = values["Costs"]
+interest = values["interest"]
+duration = values["duration"]
 
 # Leistungskurven und technischen Daten der KWEA einlesen
 data_power_curve = pd.read_csv(r'data/Leistungskurven.txt', delimiter='\t')
@@ -28,7 +37,7 @@ data_wind_tech = pd.read_csv(r'data/Daten_WKA.txt', delimiter='\t')
 # Parameter windgeschwindigkeit und Leistung auswähelen
 
 data_wind['Nordex'] = fit_power_curve(data_wind['F'],
-                                      h_soll,
+                                      h_hub,
                                       z0,
                                       'data/Leistungskurve Nordex N29.csv')
 

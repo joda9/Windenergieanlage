@@ -6,11 +6,11 @@ from scipy.optimize import curve_fit
 In diesem Modul befinden sich die Funktionen für die Verarbeitung der Winddaten.
 """
 
-def adjust_wind_speed(wind_speed, hub_height, roughness_length):
-    adjusted_speed = wind_speed * (np.log(hub_height / roughness_length) / np.log(10 / roughness_length))
+def adjust_wind_speed(data_wind, h_hub, z0):
+    adjusted_speed = data_wind * (np.log(h_hub / z0) / np.log(10 / z0))
     return adjusted_speed
 
-def fit_power_curve(wind_speeds, hub_height, roughness_length, csv_file):
+def fit_power_curve(data_wind, h_hub, roughness_length, csv_file):
     # CSV-Datei einlesen
     df = pd.read_csv(csv_file, delimiter=";")
 
@@ -40,7 +40,7 @@ def fit_power_curve(wind_speeds, hub_height, roughness_length, csv_file):
         return power_function(x, *popt)
 
     # Windgeschwindigkeit anpassen
-    adjusted_wind_speeds = adjust_wind_speed(wind_speeds, hub_height, roughness_length)
+    adjusted_wind_speeds = adjust_wind_speed(data_wind, h_hub, roughness_length)
 
     # Leistung für angepasste Windgeschwindigkeiten berechnen
     power_outputs = fitted_function(adjusted_wind_speeds)
