@@ -53,6 +53,38 @@ def adjust_wind_speed(wind_speed, hub_height, roughness_length):
     adjusted_speed = np.round(wind_speed * (np.log(hub_height / roughness_length) / np.log(10 / roughness_length)), decimals=1)
     return adjusted_speed
 
+
+def power_function(wind_speeds, cut_in, cut_out, rated_power, rated_wind, data_power_curve, turbine):
+    """
+    Interne Hilfsfunktion zur Berechnung des Leistungswerts.
+    
+    Args:
+        wind_speeds (Series): Windgeschwindigkeiten.
+        cut_in (float): Einschaltdrehzahl der Windenergieanlage.
+        cut_out (float): Abschaltdrehzahl der Windenergieanlage.
+        rated_power (float): Nennleistung der Windenergieanlage.
+        rated_wind (float): Nenngeschwindigkeit der Windenergieanlage.
+        data_power_curve (DataFrame): Leistungskurve der Windenergieanlage.
+    
+    Returns:
+        list: Liste der Leistungswerte.
+    """
+    power_values = []  # Liste zur Speicherung der Leistungswerte
+    for wind_speed in wind_speeds:
+        if wind_speed > cut_out:  # Falls die Windgeschwindigkeit größer als die Abschaltdrehzahl ist
+            power_values.append(0)  # Leistungswert ist 0
+        elif wind_speed < cut_in :
+            # Falls die Windgeschwindigkeit kleiner als die Einschaltdrehzahl ist
+            power_values.append(0)  # Leistungswert ist 0
+        elif (wind_speed < cut_out and wind_speed > rated_wind):
+            # Falls die Windgeschwindigkeit kleiner als die Abschaltdrehzahl und größer als die Nenngeschwindigkeit
+            power_values.append(rated_power) # Leistungswert = Nennleistung
+        else:
+            power = data_power_curve.loc[data_power_curve['wind_speed'] == wind_speed, turbine].values[0] # Leistungswert aus der Leistungskurve abrufen
+            power_values.append(power)  # Leistungswert zur Liste hinzufügen
+    wind_speeds[turbine] = power_values  # Leistungswerte als neue Spalte zum DataFrame hinzufügen
+    return power_values
+
 def fit_power_curve(wind_speeds, roughness_length, data_tech, turbine, data_power_curve):
     """
     Passt die Leistungskurve anhand der Windgeschwindigkeiten an.
@@ -83,38 +115,9 @@ def fit_power_curve(wind_speeds, roughness_length, data_tech, turbine, data_powe
     w = []  # Liste zur Speicherung der angepassten Windgeschwindigkeiten
     for wind in wind_speeds:
         w.append(adjust_wind_speed(wind, hub_height, roughness_length)) # Anpassung der Windgeschwindigkeiten anhand der Nabenhöhe und Rauhigkeitslänge
-    def power_function(wind_speeds, cut_in, cut_out, rated_power, rated_wind, data_power_curve):
-        """
-        Interne Hilfsfunktion zur Berechnung des Leistungswerts.
-        
-        Args:
-            wind_speeds (Series): Windgeschwindigkeiten.
-            cut_in (float): Einschaltdrehzahl der Windenergieanlage.
-            cut_out (float): Abschaltdrehzahl der Windenergieanlage.
-            rated_power (float): Nennleistung der Windenergieanlage.
-            rated_wind (float): Nenngeschwindigkeit der Windenergieanlage.
-            data_power_curve (DataFrame): Leistungskurve der Windenergieanlage.
-        
-        Returns:
-            list: Liste der Leistungswerte.
-        """
-        power_values = []  # Liste zur Speicherung der Leistungswerte
-        for wind_speed in wind_speeds:
-            if wind_speed > cut_out:  # Falls die Windgeschwindigkeit größer als die Abschaltdrehzahl ist
-                power_values.append(0)  # Leistungswert ist 0
-            elif wind_speed < cut_in :
-                # Falls die Windgeschwindigkeit kleiner als die Einschaltdrehzahl ist
-                power_values.append(0)  # Leistungswert ist 0
-            elif (wind_speed < cut_out and wind_speed > rated_wind):
-                # Falls die Windgeschwindigkeit kleiner als die Abschaltdrehzahl und größer als die Nenngeschwindigkeit
-                power_values.append(rated_power) # Leistungswert = Nennleistung
-            else:
-                power = data_power_curve.loc[data_power_curve['wind_speed'] == wind_speed, turbine].values[0] # Leistungswert aus der Leistungskurve abrufen
-                power_values.append(power)  # Leistungswert zur Liste hinzufügen
-        wind_speeds[turbine] = power_values  # Leistungswerte als neue Spalte zum DataFrame hinzufügen
-        return power_values
+    
 
-    power_outputs = power_function(wind_speeds, cut_in, cut_out, rated_power, rated_wind, data_power_curve)
+    power_outputs = power_function(wind_speeds, cut_in, cut_out, rated_power, rated_wind, data_power_curve, turbine)
     return power_outputs
 
 def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length):
