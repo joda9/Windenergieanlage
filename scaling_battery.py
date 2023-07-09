@@ -8,13 +8,15 @@ p_min = user_input["Mindestleistung"].values[0]
 '''
 
 #Bespiel
-p_min = 1000
-single_cell_energy = 5120
+p_min = 2
+single_cell_energy = 5120 / 1000
 single_cell_cost = 1700
 
 # Read hourly power output data from an Excel file and specify the data type as string
-power_data_path = "C:/Users/huliy/Desktop/Windprojekt/Windenergieanlage/data/Wetterdaten_Wanna_Szenario_1.xlsx"
+power_data_path = "data/Wetterdaten_Wanna_Szenario_1.xlsx"
+tech_infos_path = "data/technical_information.xlsx"
 power_df = pd.read_excel(power_data_path)
+df_tech_infos = pd.read_excel(tech_infos_path)
 
 # Convert the date-time column to string format
 power_df = power_df.applymap(str)
@@ -22,7 +24,7 @@ power_df = power_df.applymap(str)
 
 # Extract the turbine names
 start_col_index = 9  # The 9th column corresponds to the ACSA A27/225 turbine model
-turbine_names = power_df.iloc[:, :start_col_index].columns.values.tolist()
+turbine_names = power_df.iloc[:, start_col_index:].columns.values.tolist()
 
 # Extract the power output data
 power_outputs = power_df.iloc[:, start_col_index:].values
@@ -31,15 +33,17 @@ power_outputs = power_df.iloc[:, start_col_index:].values
 power_df.iloc[:, start_col_index:] = power_df.iloc[:, start_col_index:].astype(float)
 
 
-def calculate_flauten_time(power_outputs, p_min):
+def calculate_flauten_time(power_df, p_min, output):
     max_flauten_duration = []
-
-    for power in power_outputs:
+    output = output.set_index('Turbine')
+    output['max Flauten time'] = {}
+    for turbine in power_df.columns[8:]:
+        power = power_df[turbine]
         # Find the calm wind duration for each turbine
         calm_wind_duration = []
         current_duration = 0
 
-        for p in power:
+        for p in power.astype(float):
             if p < p_min / 2:
                 current_duration += 1
             else:
@@ -53,22 +57,20 @@ def calculate_flauten_time(power_outputs, p_min):
        # Add the last calm wind duration if it extends until the end
         if calm_wind_duration:
             max_flauten_duration.append(max(calm_wind_duration))
+            output.loc[turbine]['max Flauten time'] = max(calm_wind_duration)
     
-    return max_flauten_duration
+    return output
 
 '''
 The calculate_battery_capacity function calculates the total battery capacity based on the longest calm wind duration of each Turbine and minimum power (p_min).
 The battery capacity values are stored in a list.
 '''
-def calculate_battery_capacity(max_flauten_duration, p_min):
-    battery_capacity_list = []
+def calculate_battery_capacity(output, p_min):
+    output['Battery Capacity'] = {}
+    output['Battery Capacity'] = output['max Flauten time'] * p_min
+    
 
-    for flauten_duration in max_flauten_duration:
-        # Calculate the battery capacity for each turbine
-        battery_capacity = p_min * flauten_duration
-        battery_capacity_list.append(battery_capacity)
-
-    return battery_capacity_list
+    return output
 
 '''
 The calculate_soc function calculates the State of Charge (SOC) based on the power output, p_min, and battery capacity. The SOC values are stored in a list.
@@ -100,16 +102,16 @@ def calculate_soc(power_outputs, p_min, battery_capacity_list):
 
 
 # Calculate the maximum calm wind duration
-max_flauten_duration = calculate_flauten_time(power_outputs, p_min)
+df_tech_infos = calculate_flauten_time(power_df, p_min, df_tech_infos)
 
 # Calculate the total required battery capacity
-battery_capacity = calculate_battery_capacity(max_flauten_duration, p_min)
+df_tech_infos = calculate_battery_capacity(df_tech_infos, p_min)
 
 # Calculate required number of batteries 
-battery_number = [capacity / single_cell_energy for capacity in battery_capacity]
+df_tech_infos['number of batteries'] = df_tech_infos['Battery Capacity'] / single_cell_energy
 
 # Calculate total cost of batteries 
-battery_cost = [number * single_cell_cost for number in battery_number]
+df_tech_infos['battery cost'] = df_tech_infos['number of batteries'] * single_cell_cost
 
 # Calculate SOC changes
 soc_values_list = calculate_soc(power_outputs, p_min, battery_capacity)
@@ -133,7 +135,7 @@ result_df = pd.DataFrame({"Max. Flautenzeit (h)": max_flauten_duration,
                           "Btterie Kosten (€)": battery_cost,
                           "niedrigster SOC (%)": lowest_soc_values})
 # Store the results in an Excel file
-output_path = "C:/Users/huliy/Desktop/Windprojekt/Windenergieanlage/data/technical_information_new_kopie.xlsx"
+output_path = "data/technical_information_new_kopie.xlsx"
 
 # Read the existing results file (if it exists)
 existing_results_df = pd.DataFrame()
