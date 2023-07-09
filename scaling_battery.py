@@ -50,8 +50,9 @@ def calculate_flauten_time(power_outputs, p_min):
         if current_duration > 0:
             calm_wind_duration.append(current_duration)
 
-        # Find the longest calm wind duration for each turbine
-        max_flauten_duration.append(max(calm_wind_duration))
+       # Add the last calm wind duration if it extends until the end
+        if calm_wind_duration:
+            max_flauten_duration.append(max(calm_wind_duration))
     
     return max_flauten_duration
 
@@ -126,10 +127,23 @@ print("SOC changes:", soc_values)
 '''
 
 # Store the results in an Excel file
-result_df = pd.DataFrame({"Max Calm Wind Duration (h)": max_flauten_duration, 
-                          "Total Required Storage Capacity (kWh)": battery_capacity, 
-                          "Total Required Storage number": battery_number,
-                          "Total Storage cost (€)": battery_cost,
-                          "lowest SOC value (%)": lowest_soc_values})
+result_df = pd.DataFrame({"Max. Flautenzeit (h)": max_flauten_duration, 
+                          "Erforderliche Speicherkapazität (kWh)": battery_capacity, 
+                          "Anzahl der Batterien": battery_number,
+                          "Btterie Kosten (€)": battery_cost,
+                          "niedrigster SOC (%)": lowest_soc_values})
+# Store the results in an Excel file
 output_path = "C:/Users/huliy/Desktop/Windprojekt/Windenergieanlage/data/technical_information_new_kopie.xlsx"
-result_df.to_excel(output_path, index=False, startcol=10)
+
+# Read the existing results file (if it exists)
+existing_results_df = pd.DataFrame()
+try:
+    existing_results_df = pd.read_excel(output_path)
+except FileNotFoundError:
+    pass
+
+# Merge the existing results with the new results
+merged_results_df = pd.concat([existing_results_df, result_df], axis=1)
+
+# Write the merged results to the output file
+merged_results_df.to_excel(output_path, index=False)
