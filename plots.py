@@ -6,7 +6,60 @@ from scipy.stats import weibull_min
 
 '''
 Dieses Modul beinhaltet die Funktionen für den Plot einer Windrose und der Weibullverteilung
+und Kostenvergleich.
 '''
+
+cost_data = pd.read_csv('data/technical_information_lcoe.csv',
+                                 delimiter=';')
+cost_data['Rückbaukosten'] = 6548
+cost_data['Investitionskosten'] = cost_data['Gesamtinvestitionskosten'] - 6548 # Abzug des Rückbaus, weil sonst doppelt im Plot
+
+cost_data['Stacked Costs'] = cost_data['Investitionskosten'] + \
+                                      cost_data['Betriebskosten'] + cost_data['battery cost'] + \
+                                      cost_data['Rückbaukosten']
+
+#TODO: Anpassen, dass die Kosengünstige KWEAn geplottet werden
+cost_data = cost_data.tail(5) # Dataframe besteht aus den letzten fünf KWEA für überschaubaren Plot
+
+# Plot für die gestapelten Kosten der KWEA
+plt.figure(figsize=(15, 10))
+plt.bar(cost_data['Turbine'], cost_data['Investitionskosten'], label='Investitionskosten')
+plt.bar(cost_data['Turbine'], cost_data['Betriebskosten'], bottom=cost_data['Investitionskosten'], label='Betriebskosten')
+plt.bar(cost_data['Turbine'], cost_data['battery cost'], bottom=cost_data['Investitionskosten'] + cost_data['Betriebskosten'], label='Batteriekosten')
+plt.bar(cost_data['Turbine'], cost_data['Rückbaukosten'], bottom=cost_data['Stacked Costs'] - cost_data['Rückbaukosten'], label='Rückbau')
+plt.xlabel('Kleinwindenergieanlagenmodell')
+plt.ylabel('Gesamtkosten in €')
+plt.title('Gesamtkostenvergleich der Kleinwindenergieanlagen')
+plt.legend()
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.savefig('data/Gesamtinvestitionskosten.png')
+#plt.show()
+
+# Plot für die Nebenkosten und Rückbau einer KWEA.
+plt.figure(figsize=(15, 10))
+plt.bar(cost_data['Turbine'], cost_data['Betriebskosten'], label='Betriebskosten', color='green')
+plt.bar(cost_data['Turbine'], cost_data['battery cost'], bottom=cost_data['Betriebskosten'], label='Batteriekosten', color='orange')
+plt.bar(cost_data['Turbine'], cost_data['Rückbaukosten'], bottom=cost_data['Betriebskosten'] + cost_data['battery cost'], label='Rückbaukosten', color='red')
+plt.xlabel('Kleinwindenergieanlagenmodell')
+plt.ylabel('Nebenkosten in €')
+plt.title('Nebenkostenvergleich der Kleinwindenergieanlagen')
+plt.legend()
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.savefig('data/Nebenkosten.png')
+#plt.show()
+
+# Plot der Lcoe über die Nabenhöhe der KWEA. Macht nur dann Sinn wenn wir von einer KWEA unterschiedliche Nabenhöhen haben
+
+data_hub_sorted = cost_data.sort_values('Hub height:')
+plt.figure(figsize=(10, 6))
+plt.plot(data_hub_sorted['Hub height:'], data_hub_sorted['LCOE'], marker='o', linestyle='', color='orange')
+plt.xlabel('Nabenhöhe in m')
+plt.ylabel('LCOE in €/kWh')
+plt.title('LCOE über die Nabenhöhe von KWEA')
+plt.grid(True)
+#plt.show()
 
 # Winddaten einlesen
 data_wind = pd.read_csv(r'data/produkt_ff_stunde_20211202_20230430_00125.txt', delimiter=';')
@@ -57,7 +110,6 @@ xticks = np.arange(16)
 plt.gca().set_xticks(xticks)
 plt.gca().set_xticklabels(xlabels)
 plt.show()
-
 
 
 #Weibull Verteilung plotten:
