@@ -159,7 +159,7 @@ def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_pat
 
 
 
-def read_technical_information(url):
+def read_website_information(url):
     """
     Liest die technischen Informationen von einer Webseite aus.
 
@@ -176,6 +176,9 @@ def read_technical_information(url):
     # BeautifulSoup verwenden, um den HTML-Inhalt zu analysieren
     soup = BeautifulSoup(html_content, "html.parser")  # Erstellen eines BeautifulSoup-Objekts zum Analysieren des HTML-Inhalts
 
+    # Den Titel der Website extrahieren
+    title = soup.title.string
+    
     # Alle TabContent finden
     tab_contents = soup.find_all("div", {"class": "TabContent"})  # Finden aller Elemente mit dem Tag "div" und der Klasse "TabContent"
 
@@ -207,34 +210,14 @@ def read_technical_information(url):
         # Nur die erste Instanz der doppelten Spalte behalten
         df1 = df1[~df1.index.duplicated(keep='first')]  # Entfernen von doppelten Zeilen aus dem DataFrame, wobei die erste Instanz beibehalten wird
         df1 = df1.set_index(df1.index).transpose()  # Transponieren des DataFrames und Setzen der Indexspalte als Spaltennamen
-        return df1  # Rückgabe des vorverarbeiteten DataFrames
+        return df1, title  # Rückgabe des vorverarbeiteten DataFrames
     else:
         print("Keine TabContents gefunden.")  # Ausgabe einer Fehlermeldung, wenn keine Tabelleninhalte gefunden wurden
 
 
-def get_website_title(url):
-    """
-    Holt den Titel einer Webseite.
-
-    Args:
-        url (str): URL der Webseite.
-
-    Returns:
-        str: Titel der Webseite.
-    """
-    # HTTP-Anfrage senden und den HTML-Inhalt erhalten
-    response = requests.get(url)
-    html_content = response.content
-
-    # BeautifulSoup verwenden, um den HTML-Inhalt zu analysieren
-    soup = BeautifulSoup(html_content, "html.parser")
-
-    # Den Titel der Website extrahieren
-    title = soup.title.string
-    return title
 
 
-def add_website_titles(df):
+def add_website_infos(df):
     """
     Fügt den Titel der Webseite sowie zu jeder Turbine die technischen Informationen zu einem DataFrame hinzu.
 
@@ -264,11 +247,9 @@ def add_website_titles(df):
                 try:
                     link = row["Links"]  # Extrahieren des Links aus der aktuellen Zeile
 
-                    # Den Titel der Website abrufen
-                    title = get_website_title(link)  # Aufrufen der Funktion "get_website_title", um den Titel der Webseite zu erhalten
 
                     # Technische Informationen abrufen
-                    tech_infos = read_technical_information(link)  # Aufrufen der Funktion "read_technical_information", um die technischen Informationen der Webseite zu erhalten
+                    tech_infos, title = read_website_information(link)  # Aufrufen der Funktion "read_technical_information", um die technischen Informationen der Webseite zu erhalten
 
                     for column in tech_infos:  # Iteration über jede Spalte in den technischen Informationen
                         df_technical_infos.at[index, column] = tech_infos[column]['Value']  # Aktualisieren der entsprechenden Zelle im DataFrame mit dem Wert aus den technischen Informationen

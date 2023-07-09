@@ -21,7 +21,7 @@ Anschließend die virtuelle Umgebung aktivieren mit:
 Zunächst werden die Daten aus der Datenbank von https://wind-turbine-models.com geladen
 
 
-## Funktion: add_website_titles
+## Funktion: add_website_infos
 
 Fügt den Titel der Webseite sowie zu jeder Turbine die technischen Informationen zu einem DataFrame hinzu.
 
@@ -33,7 +33,7 @@ Rückgabewert:
 
 Beispielaufruf:
 df = pd.DataFrame({'Links': ['https://example.com/turbine1', 'https://example.com/turbine2']})
-df_with_tech_infos = add_website_titles(df)
+df_with_tech_infos = add_website_infos(df)
 print(df_with_tech_infos)
 
 

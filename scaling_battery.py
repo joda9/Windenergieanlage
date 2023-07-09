@@ -1,86 +1,151 @@
 import pandas as pd
+import numpy as np
 
 '''
-Ich habe die Winddaten und die Daten für die technischen Parameter eingelesen.
-Hier kann der Code für die Dimensionierung des Sepeichers aktualisiert werden 
-und es soll eine Funktion am Ende sein, welches später nur noch aufgerufen wird.
-
-Die Input Daten hier sollen dann nicht mehr im Modul stehen.
+# Read user input for P_min and specify the data type of the 'Mindestleistung' column as float
+user_input = pd.read_csv("C:/Users/huliy/Desktop/Windprojekt/Windenergieanlage/data/Usereingaben.csv", delimiter=';', dtype={"Mindestleistung": float})
+p_min = user_input["Mindestleistung"].values[0]
 '''
 
-# Berechnung der Mindesakkugröße und Bestimmung der Kosten für den Akku
-def calculate_total_energy(data, turbine_columns):
-    """
-    Funktion zur Berechnung des Gesamtenergieertrags für jede Windkraftanlage
-    über den betrachtetem Zeitraum in MWh.
+#Bespiel
+p_min = 2
+single_cell_energy = 5120 / 1000
+single_cell_cost = 1700
 
-    Args:
-        data (DataFrame): DataFrame mit den data_wind.
-        turbine_columns (list): Liste der Spalten, die die Windkraftanlagen identifizieren.
+# Read hourly power output data from an Excel file and specify the data type as string
+power_data_path = "data/Wetterdaten_Wanna_Szenario_1.xlsx"
+tech_infos_path = "data/technical_information.xlsx"
+power_df = pd.read_excel(power_data_path)
+df_tech_infos = pd.read_excel(tech_infos_path)
 
-    Returns:
-        DataFrame: DataFrame mit dem Gesamtenergieertrag für jede Windkraftanlage.
-    """
-    total_energy = {}
-    for turbine_column in turbine_columns:
-        total_energy[turbine_column] = data[turbine_column].sum()
+# Convert the date-time column to string format
+power_df = power_df.applymap(str)
 
-    return pd.DataFrame({'Turbine': list(total_energy.keys()), 'TotalEnergy in MWh': list(total_energy.values())})
 
-def max_consecutive_no_power(data, turbine_columns, p_min, data_wind_tech):
-    """
-    Funktion zur Ermittlung der maximalen Zeit, in der hintereinander kein Strom von jeder Windkraftanlage erzeugt wird.
-    Die Funktion fügt eine weitere Spalte hinzu, die die benötigte Akkugröße in kWh enthält.
+# Extract the turbine names
+start_col_index = 9  # The 9th column corresponds to the ACSA A27/225 turbine model
+turbine_names = power_df.iloc[:, start_col_index:].columns.values.tolist()
 
-    Args:
-        data (DataFrame): DataFrame mit den data_wind.
-        turbine_columns (list): Liste der Spalten, die die Windkraftanlagen identifizieren.
-        p_min (float): Grenzwert für die Stromerzeugung.
+# Extract the power output data
+power_outputs = power_df.iloc[:, start_col_index:].values
 
-    Returns:
-        DataFrame: DataFrame mit der maximalen Zeit, in der hintereinander kein Strom von jeder Windkraftanlage erzeugt wird und der benötigten Akkugröße.
-    """
-    max_consecutive = {}
-    battery_sizes = {}
-    Kosten_WEA = {}
-    for turbine_column in turbine_columns:
-        consecutive_hours = 0
-        max_consecutive_hours = 0
-        for _, row in data.iterrows():
-            if row[turbine_column] <= 0.5 * p_min:  # p_min halbiert, stunde wird nur gezählt, wenn weniger als die hälfte von p_min produziert wird
-                consecutive_hours += 1
-                if consecutive_hours > max_consecutive_hours:
-                    max_consecutive_hours = consecutive_hours
+# Convert power output data to float
+power_df.iloc[:, start_col_index:] = power_df.iloc[:, start_col_index:].astype(float)
+
+
+def calculate_flauten_time(power_df, p_min, output):
+    max_flauten_duration = []
+    output = output.set_index('Turbine')
+    output['max Flauten time'] = {}
+    for turbine in power_df.columns[8:]:
+        power = power_df[turbine]
+        # Find the calm wind duration for each turbine
+        calm_wind_duration = []
+        current_duration = 0
+
+        for p in power.astype(float):
+            if p < p_min / 2:
+                current_duration += 1
             else:
-                consecutive_hours = 0
-        max_consecutive[turbine_column] = max_consecutive_hours
-        battery_sizes[turbine_column] = max_consecutive_hours * p_min * 1000 #in kWh
-        Kosten_WEA[turbine_column] = data_wind_tech[turbine_column][0] * 4000 * 1000 # Nennleistung in MW mal 1000 für kW und mal 3000 für Preis/kW
-    max_consecutive_df = pd.DataFrame({'Turbine': list(max_consecutive.keys()), 'MaxConsecutiveHours': list(max_consecutive.values()), 'Battery Size in kWh': list(battery_sizes.values()), 'Kosten WEA': list(Kosten_WEA.values())})
-    max_consecutive_df['Kosten_Batterie_Euro'] = max_consecutive_df['Battery Size in kWh'] * 1200
+                calm_wind_duration.append(current_duration)
+                current_duration = 0
 
-    return max_consecutive_df
+        # Append the last calm wind duration if it extends until the end
+        if current_duration > 0:
+            calm_wind_duration.append(current_duration)
 
-# Winddaten einlesen
-data_wind = pd.read_csv(r'data/produkt_ff_stunde_20211202_20230430_00125.txt', delimiter=';')
-data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
-data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
+       # Add the last calm wind duration if it extends until the end
+        if calm_wind_duration:
+            max_flauten_duration.append(max(calm_wind_duration))
+            output.loc[turbine]['max Flauten time'] = max(calm_wind_duration)
+    
+    return output
 
-# Leistungskurven und technischen Daten der KWEA einlesen
-data_power_curve = pd.read_csv(r'data/Leistungskurven.txt', delimiter='\t')
-data_wind_tech = pd.read_csv(r'data/Daten_WKA.txt', delimiter='\t')
+'''
+The calculate_battery_capacity function calculates the total battery capacity based on the longest calm wind duration of each Turbine and minimum power (p_min).
+The battery capacity values are stored in a list.
+'''
+def calculate_battery_capacity(output, p_min):
+    output['Battery Capacity'] = {}
+    output['Battery Capacity'] = output['max Flauten time'] * p_min
+    
 
-# Turbinennamen bereinigen
-turbine_list = data_power_curve.columns[1:].str.strip().tolist()
-#Dummy für mindestleistung
-mindestleistung = 100
+    return output
 
-# Aufrufen der Funktion
-p_min = mindestleistung / 1000000 # Grenzwert für die Stromerzeugung in MW
-hours_without_power_df = max_consecutive_no_power(data_wind, turbine_list, p_min, data_wind_tech)
-hours_without_power_df['Gesamtkosten in T€'] = (hours_without_power_df['Kosten WEA'] + hours_without_power_df['Kosten_Batterie_Euro']) / 1000
-hours_without_power_df
+'''
+The calculate_soc function calculates the State of Charge (SOC) based on the power output, p_min, and battery capacity. The SOC values are stored in a list.
+'''
+def calculate_soc(power_outputs, p_min, battery_capacity_list):
+    soc_values_list = []
 
-# Beispielaufruf der Funktion
-total_energy = calculate_total_energy(data_wind, turbine_list)
-print(total_energy)
+    for power, capacity in zip(power_outputs, battery_capacity_list):
+        discharge_efficiency = 0.9  # Assuming discharge efficiency
+        charge_efficiency = 0.99  # Assuming charge efficiency
+
+        soc = 100.0  # Initial SOC set to 100%
+        soc_values = []
+
+        for p in power:
+            energy_out_hour = min(p, p_min)
+            energy_in_hour = max(p, p_min) - p_min
+
+            soc -= (energy_out_hour / (capacity * discharge_efficiency)) * 100
+            soc += (energy_in_hour / (capacity * charge_efficiency)) * 100
+
+            # SOC should be maintained between 0% and 100%
+            soc = np.clip(soc, 0, 100)
+            soc_values.append(soc)
+
+        soc_values_list.append(soc_values)
+
+    return soc_values_list
+
+
+# Calculate the maximum calm wind duration
+df_tech_infos = calculate_flauten_time(power_df, p_min, df_tech_infos)
+
+# Calculate the total required battery capacity
+df_tech_infos = calculate_battery_capacity(df_tech_infos, p_min)
+
+# Calculate required number of batteries 
+df_tech_infos['number of batteries'] = df_tech_infos['Battery Capacity'] / single_cell_energy
+
+# Calculate total cost of batteries 
+df_tech_infos['battery cost'] = df_tech_infos['number of batteries'] * single_cell_cost
+
+# Calculate SOC changes
+soc_values_list = calculate_soc(power_outputs, p_min, battery_capacity)
+
+# Find the lowest SOC value for each turbine
+lowest_soc_values = [min(soc_values) for soc_values in soc_values_list]
+
+
+
+'''
+# Print the results
+print("Max calm wind duration (hours):", max_flauten_duration)
+print("Total required battery capacity (kWh):", battery_capacity)
+print("SOC changes:", soc_values)
+'''
+
+# Store the results in an Excel file
+result_df = pd.DataFrame({"Max. Flautenzeit (h)": max_flauten_duration, 
+                          "Erforderliche Speicherkapazität (kWh)": battery_capacity, 
+                          "Anzahl der Batterien": battery_number,
+                          "Btterie Kosten (€)": battery_cost,
+                          "niedrigster SOC (%)": lowest_soc_values})
+# Store the results in an Excel file
+output_path = "data/technical_information_new_kopie.xlsx"
+
+# Read the existing results file (if it exists)
+existing_results_df = pd.DataFrame()
+try:
+    existing_results_df = pd.read_excel(output_path)
+except FileNotFoundError:
+    pass
+
+# Merge the existing results with the new results
+merged_results_df = pd.concat([existing_results_df, result_df], axis=1)
+
+# Write the merged results to the output file
+merged_results_df.to_excel(output_path, index=False)
