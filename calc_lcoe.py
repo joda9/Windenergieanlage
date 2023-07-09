@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def calc_flh_cap_factor(installed_cap, annual_yield):
     """
@@ -68,22 +69,20 @@ def calculate_lcoe(inv_costs,yearly_costs,yearly_yield, interest_rate, lifetime)
         float: The LCOE of the wind turbine
     """
 
-    data = {'Annual Costs': [], 'Annual Yield': []}
+    data = {'disk_invest': [], 'disk_ertrag': []}
 
     for year in range(1, lifetime + 1):
         present_costs = yearly_costs / (1 + interest_rate) ** year
         present_yield = yearly_yield / (1 + interest_rate) ** year
-        data['Annual Costs'].append(present_costs)
-        data['Annual Yield'].append(present_yield)
+        data['disk_invest'].append(present_costs)
+        data['disk_ertrag'].append(present_yield)
 
     df = pd.DataFrame(data, index=range(1, lifetime + 1))
-    lcoe = (inv_costs + df['Annual Costs'].sum()) / df['Annual Yield'].sum()
-    df.loc[1, 'LCOE'] = lcoe
+    lcoe = (inv_costs + df['disk_invest'].sum()) / df['disk_ertrag'].sum()
 
-    return df
+    return round(lcoe,2)
 
-
-def append_costs_df(capex,wt_name):
+def append_costs_df(capex):
     """
     TODO: Beschreibung anpassen, das hier soll nur zur Orientierung dienen.
     Die Gesamtinvestitionskosten besteht aus den Capex und den Nebenkosten für Montage
@@ -92,45 +91,33 @@ def append_costs_df(capex,wt_name):
     oder 3.7% (https://www.hs-augsburg.de/~rk/downloads/projektarbeit-windkraft.pdf)
 
     :parameter
-     capex: investment costs in €/kW.
-     wt_name: name of wind turbine (str).
+    capex: investment costs in €/kW.
 
     return
-        float: lcoe of wind turbine
+        float: lcoe of all wind turbines
     """
-    #Capex müssen variabel bleiben, damit wir hier sensibilitätsanalyse machen können
+
     df_technical_infos = pd.read_excel('data/technical_information.xlsx')
     df_cp_curves = pd.read_excel('data/Wetterdaten_Wanna_Szenario_1.xlsx')
 
     df_technical_infos['Gesamtinvestitionskosten'] = df_technical_infos['Rated power:'] * capex + (capex * 0.318)
     df_technical_infos['Betriebskosten'] = ((df_technical_infos['Rated power:'] * capex) * 0.02)
 
-    #Damit die Daten für eine bestimmte Wind turbine genommen werden
-    turbine_row = df_technical_infos[df_technical_infos['Turbine'] == wt_name]
-    turbine_var_cost = df_technical_infos[df_technical_infos['Turbine'] == wt_name]
-
-    # Check if the turbine name exists in the DataFrame
-    if turbine_row.empty:
-        return 'Windturbine kann nicht gefunden werden.'
-
-    if turbine_var_cost.empty:
-        return 'Windturbinen Betriebskosten kann nicht gefunden werden.'
-
     # Get the cost value from the 'costs' column
-    inv_costs = turbine_row['Gesamtinvestitionskosten'].values[0]
-    yearly_costs = turbine_var_cost['Betriebskosten'].values[0]
+    for index, row in df_technical_infos.iterrows():
+        turbine_name = row['Turbine']
+        inv_costs = row['Gesamtinvestitionskosten']
+        yearly_costs = row['Betriebskosten']
 
-    lcoe = calculate_lcoe(inv_costs=inv_costs,
-                          yearly_costs=yearly_costs,
-                          yearly_yield=df_cp_curves[wt_name].sum(),
-                          interest_rate=0.08,
-                          lifetime=20)
+        lcoe = calculate_lcoe(inv_costs=inv_costs,
+                              yearly_costs=yearly_costs,
+                              yearly_yield=df_cp_curves[turbine_name].sum(),
+                              interest_rate=0.08,
+                              lifetime=20)
 
-    return lcoe
+        df_technical_infos.loc[index, 'LCOE'] = lcoe
 
-nordex_n29= append_costs_df(capex=4500,
-                       wt_name='Nordex N29')
+    return df_technical_infos
 
-nordex_n29.to_excel('data/annuity_nordex_n29.xlsx')
-
-print(nordex_n29)
+tech_lcoe = append_costs_df(capex=4500)
+tech_lcoe.to_excel('data/technical_information_lcoe.xlsx')
