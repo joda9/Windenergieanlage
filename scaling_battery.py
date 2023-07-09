@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import math
 
 '''
 # Read user input for P_min and specify the data type of the 'Mindestleistung' column as float
@@ -8,7 +9,7 @@ p_min = user_input["Mindestleistung"].values[0]
 '''
 
 #Bespiel
-p_min = 2
+p_min = .300
 single_cell_energy = 5120 / 1000
 single_cell_cost = 1700
 
@@ -17,13 +18,14 @@ power_data_path = "data/Wetterdaten_Wanna_Szenario_1.xlsx"
 tech_infos_path = "data/technical_information.xlsx"
 power_df = pd.read_excel(power_data_path)
 df_tech_infos = pd.read_excel(tech_infos_path)
+df_tech_infos = df_tech_infos.set_index('Turbine')
 
 # Convert the date-time column to string format
 power_df = power_df.applymap(str)
 
 
 # Extract the turbine names
-start_col_index = 9  # The 9th column corresponds to the ACSA A27/225 turbine model
+start_col_index = 8  # The 9th column corresponds to the ACSA A27/225 turbine model
 turbine_names = power_df.iloc[:, start_col_index:].columns.values.tolist()
 
 # Extract the power output data
@@ -33,33 +35,35 @@ power_outputs = power_df.iloc[:, start_col_index:].values
 power_df.iloc[:, start_col_index:] = power_df.iloc[:, start_col_index:].astype(float)
 
 
-def calculate_flauten_time(power_df, p_min, output):
+def calculate_flauten_time(power_df, p_min, df_tech_infos):
     max_flauten_duration = []
-    output = output.set_index('Turbine')
-    output['max Flauten time'] = {}
-    for turbine in power_df.columns[8:]:
-        power = power_df[turbine]
-        # Find the calm wind duration for each turbine
-        calm_wind_duration = []
-        current_duration = 0
-
-        for p in power.astype(float):
-            if p < p_min / 2:
-                current_duration += 1
-            else:
-                calm_wind_duration.append(current_duration)
-                current_duration = 0
-
-        # Append the last calm wind duration if it extends until the end
-        if current_duration > 0:
-            calm_wind_duration.append(current_duration)
-
-       # Add the last calm wind duration if it extends until the end
-        if calm_wind_duration:
-            max_flauten_duration.append(max(calm_wind_duration))
-            output.loc[turbine]['max Flauten time'] = max(calm_wind_duration)
+    df_tech_infos['max Flauten time'] = {}
+    for turbine in power_df.columns[7:]:
+        try:
+            power = power_df[turbine]
+            # Find the calm wind duration for each turbine
+            calm_wind_duration = []
+            current_duration = 0
     
-    return output
+            for p in power.astype(float):
+                if p < p_min / 2:
+                    current_duration += 1
+                else:
+                    calm_wind_duration.append(current_duration)
+                    current_duration = 0
+    
+            # Append the last calm wind duration if it extends until the end
+            if current_duration > 0:
+                calm_wind_duration.append(current_duration)
+    
+           # Add the last calm wind duration if it extends until the end
+            if calm_wind_duration:
+                max_flauten_duration.append(max(calm_wind_duration))
+                df_tech_infos['max Flauten time'][turbine] = max(calm_wind_duration)
+        except Exception as e:
+            print(e)
+    
+    return df_tech_infos
 
 '''
 The calculate_battery_capacity function calculates the total battery capacity based on the longest calm wind duration of each Turbine and minimum power (p_min).
@@ -109,15 +113,12 @@ df_tech_infos = calculate_battery_capacity(df_tech_infos, p_min)
 
 # Calculate required number of batteries 
 df_tech_infos['number of batteries'] = df_tech_infos['Battery Capacity'] / single_cell_energy
+df_tech_infos['number of batteries'] = df_tech_infos['number of batteries'].apply(np.ceil)
 
 # Calculate total cost of batteries 
 df_tech_infos['battery cost'] = df_tech_infos['number of batteries'] * single_cell_cost
 
-# Calculate SOC changes
-soc_values_list = calculate_soc(power_outputs, p_min, battery_capacity)
-
-# Find the lowest SOC value for each turbine
-lowest_soc_values = [min(soc_values) for soc_values in soc_values_list]
+df_tech_infos.to_excel(tech_infos_path)
 
 
 
@@ -128,24 +129,5 @@ print("Total required battery capacity (kWh):", battery_capacity)
 print("SOC changes:", soc_values)
 '''
 
-# Store the results in an Excel file
-result_df = pd.DataFrame({"Max. Flautenzeit (h)": max_flauten_duration, 
-                          "Erforderliche Speicherkapazität (kWh)": battery_capacity, 
-                          "Anzahl der Batterien": battery_number,
-                          "Btterie Kosten (€)": battery_cost,
-                          "niedrigster SOC (%)": lowest_soc_values})
-# Store the results in an Excel file
-output_path = "data/technical_information_new_kopie.xlsx"
 
-# Read the existing results file (if it exists)
-existing_results_df = pd.DataFrame()
-try:
-    existing_results_df = pd.read_excel(output_path)
-except FileNotFoundError:
-    pass
 
-# Merge the existing results with the new results
-merged_results_df = pd.concat([existing_results_df, result_df], axis=1)
-
-# Write the merged results to the output file
-merged_results_df.to_excel(output_path, index=False)
