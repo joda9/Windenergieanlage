@@ -5,10 +5,15 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 import importlib
+import os
+from interface import *
 
-import interface
-importlib.reload(interface)
-#from interface import *
+if 'interface' in globals():
+    importlib.reload(interface)
+else:
+    #from interface import *
+    import interface
+    
 from wind_data_processing import *
 
 
@@ -19,7 +24,7 @@ values, data_wind = interface.process_inputs() # type: ignore
 
 z0 = values["z0"]
 h_mess = values["h_mess"]
-h_hub = values["h_soll"]
+h_hub = values["h_hub"]
 required_power = values["required_power"]
 Costs = values["Costs"]
 interest = values["interest"]
