@@ -99,7 +99,7 @@ def append_costs_df(capex,wt_name):
         float: lcoe of wind turbine
     """
     #Capex müssen variabel bleiben, damit wir hier sensibilitätsanalyse machen können
-    df_technical_infos = pd.read_excel('data/technical_information_new.xlsx')
+    df_technical_infos = pd.read_excel('data/technical_information.xlsx')
     df_cp_curves = pd.read_excel('data/Wetterdaten_Wanna_Szenario_1.xlsx')
 
     df_technical_infos['Gesamtinvestitionskosten'] = df_technical_infos['Rated power:'] * capex + (capex * 0.318)
