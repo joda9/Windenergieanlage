@@ -89,6 +89,8 @@ def append_costs_df(capex):
     mit 31.8% (https://www.hs-augsburg.de/~rk/downloads/projektarbeit-windkraft.pdf).
     Die O&M können variieren zwischen 1 und 3% (https://iopscience.iop.org/article/10.1088/1755-1315/410/1/012047/pdf)
     oder 3.7% (https://www.hs-augsburg.de/~rk/downloads/projektarbeit-windkraft.pdf)
+    Rückbau wird zunächst pauschal auf 6548 € gesetzt. Die Summe ergibt sich aus Tabelle 16/17/18.
+    (https://www.umweltbundesamt.de/sites/default/files/medien/1410/publikationen/2019_10_09_texte_117-2019_uba_weacycle_mit_summary_and_abstract_170719_final_v4_pdfua_0.pdf)
 
     :parameter
     capex: investment costs in €/kW.
@@ -100,7 +102,8 @@ def append_costs_df(capex):
     df_technical_infos = pd.read_excel('data/technical_information.xlsx')
     df_cp_curves = pd.read_excel('data/Wetterdaten_Wanna_Szenario_1.xlsx')
 
-    df_technical_infos['Gesamtinvestitionskosten'] = df_technical_infos['Rated power:'] * capex + (capex * 0.318)
+    df_technical_infos['Gesamtinvestitionskosten'] = df_technical_infos['Rated power:'] * capex + (capex * 0.318) \
+                                                     + df_technical_infos['battery cost'] + 6548
     df_technical_infos['Betriebskosten'] = ((df_technical_infos['Rated power:'] * capex) * 0.02)
 
     # Get the cost value from the 'costs' column
@@ -112,7 +115,7 @@ def append_costs_df(capex):
         lcoe = calculate_lcoe(inv_costs=inv_costs,
                               yearly_costs=yearly_costs,
                               yearly_yield=df_cp_curves[turbine_name].sum(),
-                              interest_rate=0.08,
+                              interest_rate=0.04,
                               lifetime=20)
 
         df_technical_infos.loc[index, 'LCOE'] = lcoe
