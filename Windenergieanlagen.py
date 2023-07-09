@@ -12,10 +12,10 @@ save_path_powerdata = r'data/Wetterdaten_Wanna_Szenario_1.xlsx'     # Dateipfad 
 data_power_curve_path = r'data/powercurves_interpolated.csv'  # Dateipfad zur Leistungskurve
 data_tech_path = r'data/technical_information.xlsx'  # Dateipfad zu den technischen Daten
 
-hub_height = 80.0  # Nabenhöhe der Windenergieanlage
+# hub_height = 80.0  # Nabenhöhe der Windenergieanlage
 roughness_length = 0.1  # Rauhigkeitslänge
 
-data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, hub_height, roughness_length)
+data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length)
 data_wind.to_excel(save_path_powerdata)
 # Verarbeitung der Winddaten und Anpassung der Leistungskurve
 

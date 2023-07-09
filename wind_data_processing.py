@@ -53,13 +53,12 @@ def adjust_wind_speed(wind_speed, hub_height, roughness_length):
     adjusted_speed = np.round(wind_speed * (np.log(hub_height / roughness_length) / np.log(10 / roughness_length)), decimals=1)
     return adjusted_speed
 
-def fit_power_curve(wind_speeds, hub_height, roughness_length, data_tech, turbine, data_power_curve):
+def fit_power_curve(wind_speeds, roughness_length, data_tech, turbine, data_power_curve):
     """
     Passt die Leistungskurve anhand der Windgeschwindigkeiten an.
     
     Args:
         wind_speeds (Series): Windgeschwindigkeiten.
-        hub_height (float): Nabenhöhe der Windenergieanlage.
         roughness_length (float): Rauhigkeitslänge.
         data_tech (DataFrame): Technische Daten der Windenergieanlage.
         turbine (str): Name der Turbine.
@@ -79,7 +78,11 @@ def fit_power_curve(wind_speeds, hub_height, roughness_length, data_tech, turbin
     cut_out = float(data_tech['Cutout wind speed:'][data_tech.index.str.startswith(turbine)])  # Abschaltdrehzahl der Windenergieanlage
     rated_power = float(data_tech['Rated power:'][data_tech.index.str.startswith(turbine)])  # Nennleistung der Windenergieanlage
     rated_wind = float(data_tech['Rated wind speed:'][data_tech.index.str.startswith(turbine)])  # Nennwindgeschwindigkeit der Windenergieanlage
+    hub_height = float(data_tech['Hub height:'][data_tech.index.str.startswith(turbine)])  # Nennwindgeschwindigkeit der Windenergieanlage
     
+    w = []  # Liste zur Speicherung der angepassten Windgeschwindigkeiten
+    for wind in wind_speeds:
+        w.append(adjust_wind_speed(wind, hub_height, roughness_length)) # Anpassung der Windgeschwindigkeiten anhand der Nabenhöhe und Rauhigkeitslänge
     def power_function(wind_speeds, cut_in, cut_out, rated_power, rated_wind, data_power_curve):
         """
         Interne Hilfsfunktion zur Berechnung des Leistungswerts.
@@ -114,7 +117,7 @@ def fit_power_curve(wind_speeds, hub_height, roughness_length, data_tech, turbin
     power_outputs = power_function(wind_speeds, cut_in, cut_out, rated_power, rated_wind, data_power_curve)
     return power_outputs
 
-def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, hub_height, roughness_length):
+def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length):
     """
     Verarbeitet die Winddaten und passt die Leistungskurve an.
     
@@ -139,15 +142,11 @@ def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_pat
     
     data_tech = pd.read_excel(data_tech_path, index_col='Turbine') # Einlesen der technischen Daten aus einer Excel-Datei
     
-    w = []  # Liste zur Speicherung der angepassten Windgeschwindigkeiten
-    for wind in data_wind['F']:
-        w.append(adjust_wind_speed(wind, hub_height, roughness_length)) # Anpassung der Windgeschwindigkeiten anhand der Nabenhöhe und Rauhigkeitslänge
-    data_wind['true_windspeed'] = w  # Hinzufügen der angepassten Windgeschwindigkeiten als neue Spalte zum DataFrame
     
     result_df = pd.DataFrame(index=data_wind.index)  # Leeres DataFrame zum Speichern der Ergebnisse der Anpassung der Leistungskurve
     for turbine in tqdm(data_power_curve.columns[1:]): # Iteration über jede Turbine in der Leistungskurve
         try:
-            result_df[turbine] = fit_power_curve(data_wind['true_windspeed'].copy(), hub_height, roughness_length, data_tech, turbine, data_power_curve) # Anpassung der Leistungskurve anhand der Windgeschwindigkeiten und Speicherung der Ergebnisse im DataFrame
+            result_df[turbine] = fit_power_curve(data_wind['F'], roughness_length, data_tech, turbine, data_power_curve) # Anpassung der Leistungskurve anhand der Windgeschwindigkeiten und Speicherung der Ergebnisse im DataFrame
         except Exception as e:
             print(turbine, ' klappt nicht wegen', e) # Ausgabe einer Fehlermeldung, falls ein Fehler auftritt
 
