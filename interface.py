@@ -113,7 +113,7 @@ def get_user_values():
         float(interest_rate),
         int(lifetime),
         float(capex),
-        os.path.join('data', save_path_powerdata),
+        os.path.join(save_path_powerdata),
         os.path.join('data', data_power_curve_path),
         os.path.join('data', data_tech_path),
         os.path.join('weatherdata', data_wind_path)
