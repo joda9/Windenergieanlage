@@ -9,8 +9,7 @@ Dieses Modul beinhaltet die Funktionen für den Plot einer Windrose und der Weib
 und Kostenvergleich.
 '''
 
-cost_data = pd.read_csv('data/technical_information_lcoe.csv',
-                                 delimiter=';')
+cost_data = pd.read_excel('data/technical_information_lcoe.xlsx')
 cost_data['Rückbaukosten'] = 6548
 cost_data['Investitionskosten'] = cost_data['Gesamtinvestitionskosten'] - 6548 # Abzug des Rückbaus, weil sonst doppelt im Plot
 
@@ -62,7 +61,7 @@ plt.grid(True)
 #plt.show()
 
 # Winddaten einlesen
-data_wind = pd.read_csv(r'data/produkt_ff_stunde_20211202_20230430_00125.txt', delimiter=';')
+data_wind = pd.read_csv(r'data/Wetterdaten_Wanna_Szenario_1.txt', delimiter=';')
 data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
 data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
 
