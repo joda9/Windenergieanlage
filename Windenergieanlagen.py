@@ -2,47 +2,34 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
-from tkinter import messagebox
 from tkinter import ttk
 import importlib
-import os
-from interface import *
+import pandas as pd
+#from interface import *
+
+
 
 if 'interface' in globals():
     importlib.reload(interface)
 else:
-    #from interface import *
     import interface
-    
+#    
+from interface import z0, h_mess, required_power, data_wind, Costs, interest, duration, h_hub
+global z0, h_mess, required_power, data_wind, Costs, interest, duration, h_hub
 from wind_data_processing import *
 
 
 """
 Daten einlesen und modifizieren.
 """
-values, data_wind = interface.process_inputs() # type: ignore
-
-z0 = values["z0"]
-h_mess = values["h_mess"]
-h_hub = values["h_hub"]
-required_power = values["required_power"]
-Costs = values["Costs"]
-interest = values["interest"]
-duration = values["duration"]
 
 # Leistungskurven und technischen Daten der KWEA einlesen
 data_power_curve = pd.read_csv(r'data/Leistungskurven.txt', delimiter='\t')
 data_wind_tech = pd.read_csv(r'data/Daten_WKA.txt', delimiter='\t')
 
-# Multipliziere data_wind mit den entsprechenden Faktoren für jede Turbine
-#hub_height = 80.0  # Eingabe kommt aus dem GUI TODO: Verbindung zum GUI herstellen # hub_height entspricht h_soll des Interfaces
-#roughness_length = 0.1  # Eingabe kommt aus dem GUI TODO: Verbindung zum GUI herstellen # roughness_length entspricht z0 des Interfaces
-
-#TODO: Datensatz extra einlesen wäre besser, dann in Funktion fit_power_curve()
-# Parameter windgeschwindigkeit und Leistung auswähelen
-
 data_wind['Nordex'] = fit_power_curve(data_wind['F'],
                                       h_hub,
+                                      h_mess,
                                       z0,
                                       'data/Leistungskurve Nordex N29.csv')
 
