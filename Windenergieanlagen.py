@@ -13,7 +13,7 @@ Anschließend werden aus den Daten die Leistungen der Turbinen stundengenau ermi
 data_wind_path = r'data/Wetterdaten_Wanna_Szenario_1.txt'  # Dateipfad zu den Wetterdaten
 save_path_powerdata = r'data/Wetterdaten_Wanna_Szenario_1.xlsx'     # Dateipfad zur Speicherung der Daten in einer xlsx
 data_power_curve_path = r'data/powercurves_interpolated.csv'  # Dateipfad zur Leistungskurve
-data_tech_path = 'data/technical_information_lcoe.xlsx'  # Dateipfad zu den technischen Daten
+data_tech_path = 'data/technical_information.xlsx'  # Dateipfad zu den technischen Daten
 
 # hub_height = 80.0  # Nabenhöhe der Windenergieanlage
 roughness_length =      0.1  # Rauhigkeitslänge
@@ -28,14 +28,14 @@ capex=                  4500    # €/kW
 """
 stündliche Leistungsdaten berechnen
 """
-# data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length)
-# data_wind.to_excel(save_path_powerdata)
+data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length)
+data_wind.to_excel(save_path_powerdata)
 
 """
 LCOE berechnen
 """
-# tech_lcoe = append_costs_df(capex, lifetime, interest_rate)
-# tech_lcoe.to_excel('data/technical_information_lcoe.xlsx')
+tech_lcoe = append_costs_df(capex, lifetime, interest_rate)
+tech_lcoe.to_excel('data/technical_information_lcoe.xlsx')
 
 """
 Scaling Battery
