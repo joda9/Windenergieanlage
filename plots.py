@@ -4,13 +4,16 @@ import matplotlib.pyplot as plt
 from windrose import WindroseAxes
 from scipy.stats import weibull_min
 
-def plot_all(data_tech_path):
+def plot_all(data_tech_path,nr_of_top):
     '''
     Dieses Modul beinhaltet die Funktionen für den Plot einer Windrose und der Weibullverteilung
     und Kostenvergleich.
     '''
 
     cost_data = pd.read_excel(data_tech_path)
+    cost_data = cost_data.sort_values('LCOE')
+    cost_data = cost_data.head(nr_of_top)
+    
     cost_data['Rückbaukosten'] = 6548
     cost_data['Investitionskosten'] = cost_data['Gesamtinvestitionskosten'] - 6548 # Abzug des Rückbaus, weil sonst doppelt im Plot
 

@@ -35,17 +35,18 @@ data_wind.to_excel(save_path_powerdata)
 LCOE berechnen
 """
 tech_lcoe = append_costs_df(capex, lifetime, interest_rate)
-tech_lcoe.to_excel('data/technical_information_lcoe.xlsx')
+tech_lcoe.to_excel(data_tech_path)
 
 """
 Scaling Battery
 """
 tech_battery = calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tech_path)
+tech_battery.to_excel(data_tech_path)
 
 """
 Plots
 """
-plot_all(data_tech_path)
+plot_all(data_tech_path,nr_of_top=15)
 
 # Turbinennamen bereinigen
 turbine_list = data_power_curve.columns[1:].str.strip().tolist()
