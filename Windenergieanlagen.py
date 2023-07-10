@@ -11,25 +11,12 @@ from interface import *
 Winddaten sowie technische Daten der Turbinen und Leistungskurven einlesen
 Anschließend werden aus den Daten die Leistungen der Turbinen stundengenau ermittelt
 """
-data_wind_path = r'data/Wetterdaten_Wanna_Szenario_1.txt'  # Dateipfad zu den Wetterdaten
-save_path_powerdata = r'data/Wetterdaten_Wanna_Szenario_1.xlsx'     # Dateipfad zur Speicherung der Daten in einer xlsx
-data_power_curve_path = r'data/powercurves_interpolated.csv'  # Dateipfad zur Leistungskurve
-data_tech_path = 'data/technical_information.xlsx'  # Dateipfad zu den technischen Daten
-
-# # hub_height = 80.0  # Nabenhöhe der Windenergieanlage
-# roughness_length =      0.1  # Rauhigkeitslänge
-# p_min =                 .300  #kW
-# single_cell_energy =    5120 / 1000 # kWh
-# single_cell_cost =      1700    # €
-# interest_rate=          0.04    #
-# lifetime=               20      # a
-# capex=                  4500    # €/kW
 
 
 """
 UserInput
 """
-roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata = get_user_values()
+roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata, data_power_curve_path, data_tech_path, data_wind_path = get_user_values()
 
 """
 stündliche Leistungsdaten berechnen
@@ -53,59 +40,3 @@ tech_battery.to_excel(data_tech_path)
 Plots
 """
 plot_all(data_tech_path,nr_of_top=15)
-
-# Turbinennamen bereinigen
-turbine_list = data_power_curve.columns[1:].str.strip().tolist()
-
-# Funktion zum Aktualisieren des Graphen basierend auf der ausgewählten Turbine TODO: Welcher Graphen ist hier gemeint?
-def update_graph():
-    selected_turbine = turbine_combo.get()
-    if selected_turbine:
-        graph.clear()
-        graph.plot(data_wind['MESS_DATUM'], data_wind[selected_turbine], label=selected_turbine)
-
-        # Achsenbeschriftungen und Titel hinzufügen
-        graph.set_xlabel('Datum und Uhrzeit')
-        graph.set_ylabel('Leistung')
-        graph.set_title(f'Leistung der Turbine {selected_turbine} über die Zeit')
-
-        # Datumsformat für die x-Achse festlegen
-        date_format = "%d-%b-%Y %H:%M"
-        graph.xaxis.set_major_formatter(mdates.DateFormatter(date_format))
-
-        # Automatische Anpassung des Layouts
-        graph.figure.autofmt_xdate()
-
-        # Legende anzeigen
-        graph.legend()
-
-        # Graph anzeigen
-        canvas.draw()
-
-# GUI erstellen
-root = tk.Tk()
-root.title("Leistung der Turbine über die Zeit")
-
-# Graph erstellen
-fig = plt.figure(figsize=(8, 6))
-graph = fig.add_subplot(1, 1, 1)
-canvas = FigureCanvasTkAgg(fig, master=root)
-canvas.get_tk_widget().pack()
-
-
-# Frame erstellen
-frame = ttk.Frame(root)
-frame.pack(pady=10)
-
-# Dropdown-Menü für Turbinenauswahl erstellen
-turbine_label = ttk.Label(frame, text="Turbine auswählen:")
-turbine_label.pack(side="left", padx=5)
-turbine_combo = ttk.Combobox(frame, values=turbine_list, state="readonly")
-turbine_combo.pack(side="left", padx=5)
-turbine_combo.bind("<<ComboboxSelected>>", lambda event: update_graph())
-
-# Initialen Graph anzeigen
-update_graph()
-
-# GUI starten
-root.mainloop()

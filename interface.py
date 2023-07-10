@@ -7,7 +7,7 @@ def get_user_values():
 
     # Funktion zum Speichern der Werte und Beenden der GUI
     def save_values():
-        global roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata
+        global roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata, data_power_curve_path, data_tech_path, data_wind_path
         roughness_length = float(entry_roughness_length.get())
         p_min = float(entry_p_min.get())
         single_cell_energy = float(entry_single_cell_energy.get())
@@ -15,13 +15,15 @@ def get_user_values():
         interest_rate = float(entry_interest_rate.get())
         lifetime = int(entry_lifetime.get())
         capex = float(entry_capex.get())
-        save_path_powerdata = var_save_path_powerdata.get()
-    
+        save_path_powerdata = entry_save_path_powerdata.get()
+        data_power_curve_path = var_data_power_curve_path.get()
+        data_tech_path = var_data_tech_path.get()
+        data_wind_path = var_data_wind_path.get()
+
         root.destroy()
 
-
     root.title("Eingabewerte")
-    root.geometry("400x500")
+    root.geometry("400x550")  # Vergrößert die Höhe des Fensters
 
     # Label und Eingabefelder
     label_roughness_length = tk.Label(root, text="Rauhigkeitslänge:")
@@ -68,11 +70,33 @@ def get_user_values():
 
     label_save_path_powerdata = tk.Label(root, text="Save Path Power Data:")
     label_save_path_powerdata.pack()
-    var_save_path_powerdata = tk.StringVar(root)
-    file_list = [f for f in os.listdir('weatherdata') if os.path.isfile(os.path.join('weatherdata', f))]
-    var_save_path_powerdata.set(file_list[0])
-    dropdown_save_path_powerdata = tk.OptionMenu(root, var_save_path_powerdata, *file_list)
-    dropdown_save_path_powerdata.pack()
+    entry_save_path_powerdata = tk.Entry(root)
+    entry_save_path_powerdata.insert(tk.END, r'data/Wetterdaten_Wanna_Szenario_1.xlsx')
+    entry_save_path_powerdata.pack()
+
+    label_data_power_curve_path = tk.Label(root, text="Data Power Curve Path:")
+    label_data_power_curve_path.pack()
+    var_data_power_curve_path = tk.StringVar(root)
+    data_power_curve_files = [f for f in os.listdir('data') if os.path.isfile(os.path.join('data', f))]
+    var_data_power_curve_path.set(data_power_curve_files[0])
+    dropdown_data_power_curve_path = tk.OptionMenu(root, var_data_power_curve_path, *data_power_curve_files)
+    dropdown_data_power_curve_path.pack()
+
+    label_data_tech_path = tk.Label(root, text="Data Tech Path:")
+    label_data_tech_path.pack()
+    var_data_tech_path = tk.StringVar(root)
+    data_tech_files = [f for f in os.listdir('data') if os.path.isfile(os.path.join('data', f))]
+    var_data_tech_path.set(data_tech_files[0])
+    dropdown_data_tech_path = tk.OptionMenu(root, var_data_tech_path, *data_tech_files)
+    dropdown_data_tech_path.pack()
+
+    label_data_wind_path = tk.Label(root, text="Data Wind Path:")
+    label_data_wind_path.pack()
+    var_data_wind_path = tk.StringVar(root)
+    data_wind_files = [f for f in os.listdir('weatherdata') if os.path.isfile(os.path.join('weatherdata', f))]
+    var_data_wind_path.set(data_wind_files[0])
+    dropdown_data_wind_path = tk.OptionMenu(root, var_data_wind_path, *data_wind_files)
+    dropdown_data_wind_path.pack()
 
     # Speichern-Button
     button_save = tk.Button(root, text="Speichern", command=save_values)
@@ -89,5 +113,8 @@ def get_user_values():
         float(interest_rate),
         int(lifetime),
         float(capex),
-        save_path_powerdata
+        os.path.join('data', save_path_powerdata),
+        os.path.join('data', data_power_curve_path),
+        os.path.join('data', data_tech_path),
+        os.path.join('weatherdata', data_wind_path)
     )
