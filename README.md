@@ -16,6 +16,27 @@ Anschließend die virtuelle Umgebung aktivieren mit:
 
 `conda activate WEA`
 
+# (nur für Spyder):
+
+
+Um das Paket spyder-kernels zu installieren, führen Sie den folgenden Befehl aus:
+
+    Für Conda/Anaconda: conda install spyder-kernels
+
+    Für Pip/Virtualenv: pip install spyder-kernels
+
+Nach der Installation führen Sie den folgenden Befehl in derselben Umgebung aus:
+
+python -c "import sys; print(sys.executable)"
+
+Kopieren Sie den zurückgegebenen Pfad (er sollte mit "python", "pythonw", "python.exe" oder "pythonw.exe" enden), indem Sie ihn markieren und kopieren.
+
+Deaktivieren Sie die aktuelle Umgebung und aktivieren Sie die Umgebung, in der Spyder installiert ist (falls Sie es in einer eigenen Umgebung installiert haben). Starten Sie Spyder wie gewohnt.
+
+Nachdem Spyder gestartet ist, navigieren Sie zu Einstellungen > Python-Interpreter > Folgenden Interpreter verwenden und fügen Sie den in Schritt 3 kopierten Pfad in das Textfeld ein.
+
+Starten Sie eine neue IPython-Konsole. Alle Pakete, die in Ihrer Umgebung installiert sind, sollten dort verfügbar sein. Wenn Conda verwendet wird, sollte der Name der aktuellen Umgebung und deren Python-Version in der Statusleiste von Spyder angezeigt werden. Wenn Sie mit der Maus darüber fahren, wird der Pfad des ausgewählten Interpreters angezeigt.
+
 # Vorverarbeitung von Leistungskurven
 
 Zunächst werden die Daten aus der Datenbank von https://wind-turbine-models.com geladen
