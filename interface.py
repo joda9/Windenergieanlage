@@ -1,108 +1,93 @@
 import tkinter as tk
-from tkinter import messagebox
-from tkinter import ttk
+from tkinter import filedialog, messagebox
 import os
 
-"""
-In diesem Modul wird de Code für die Benutzer*innenfläche beschrieben.
-"""
-# Create a tkinter window
-window = tk.Tk()
+def get_user_values():
+    root = tk.Tk()
 
-# Define function to process the inputs
-def process_inputs():
-    global alpha, z0, h, required_power, option, file_name
-    alpha = float(entry_alpha.get())
-    z0 = float(entry_z0.get())
-    h = float(entry_h.get())
-    required_power = float(entry_required_power.get())
-    option = combo_option.get()
-    file_name = entry_file_name.get()
-
-    if alpha < 0 or alpha > 2:
-        messagebox.showerror("Invalid Input", "Alpha value must be between 0 and 10.")
-        return
-
-    if z0 < 0:
-        messagebox.showerror("Invalid Input", "z0 value must be positive.")
-        return
-
-    if h < 0:
-        messagebox.showerror("Invalid Input", "h value must be positive.")
-        return
-
-    if required_power < 0 or required_power > 250:
-        messagebox.showerror("Invalid Input", "Required power value must be between 0 and 250.")
-        return
-
-    if not alpha or not z0 or not h or not required_power or not option or not file_name:
-        messagebox.showerror("Missing Input", "Please fill in all required fields.")
-        return
-
-    try:
-        alpha = float(alpha)
-        z0 = float(z0)
-        h = float(h)
-        required_power = float(required_power)
-    except ValueError:
-        messagebox.showerror("Invalid Input", "Please enter valid numeric values.")
-        return
-
-    # Check if the file exists
-    if not os.path.isfile(file_name):
-        messagebox.showerror("File Not Found", "The specified file does not exist in the directory.")
-        return
-
-    window.destroy()  # Close the window
-
-    # Continue with the rest of the code
-    # ...
+    # Funktion zum Speichern der Werte und Beenden der GUI
+    def save_values():
+        global roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata
+        roughness_length = float(entry_roughness_length.get())
+        p_min = float(entry_p_min.get())
+        single_cell_energy = float(entry_single_cell_energy.get())
+        single_cell_cost = float(entry_single_cell_cost.get())
+        interest_rate = float(entry_interest_rate.get())
+        lifetime = int(entry_lifetime.get())
+        capex = float(entry_capex.get())
+        save_path_powerdata = var_save_path_powerdata.get()
+    
+        root.destroy()
 
 
-# Create labels and entry fields for inputs
-label_alpha = tk.Label(window, text="Alpha:")
-label_alpha.pack()
-entry_alpha = tk.Entry(window)
-entry_alpha.pack()
+    root.title("Eingabewerte")
+    root.geometry("400x500")
 
-label_z0 = tk.Label(window, text="z0:")
-label_z0.pack()
-entry_z0 = tk.Entry(window)
-entry_z0.pack()
+    # Label und Eingabefelder
+    label_roughness_length = tk.Label(root, text="Rauhigkeitslänge:")
+    label_roughness_length.pack()
+    entry_roughness_length = tk.Entry(root)
+    entry_roughness_length.insert(tk.END, "0.1")
+    entry_roughness_length.pack()
 
-label_h = tk.Label(window, text="h[m]:")
-label_h.pack()
-entry_h = tk.Entry(window)
-entry_h.pack()
+    label_p_min = tk.Label(root, text="p_min (kW):")
+    label_p_min.pack()
+    entry_p_min = tk.Entry(root)
+    entry_p_min.insert(tk.END, "0.300")
+    entry_p_min.pack()
 
-label_required_power = tk.Label(window, text="Required Power[kW]:")
-label_required_power.pack()
-entry_required_power = tk.Entry(window)
-entry_required_power.pack()
+    label_single_cell_energy = tk.Label(root, text="Single Cell Energy (kWh):")
+    label_single_cell_energy.pack()
+    entry_single_cell_energy = tk.Entry(root)
+    entry_single_cell_energy.insert(tk.END, str(5120 / 1000))
+    entry_single_cell_energy.pack()
 
-# Create a dropdown menu for an option
+    label_single_cell_cost = tk.Label(root, text="Single Cell Cost (€):")
+    label_single_cell_cost.pack()
+    entry_single_cell_cost = tk.Entry(root)
+    entry_single_cell_cost.insert(tk.END, "1700")
+    entry_single_cell_cost.pack()
 
-label_file_name = tk.Label(window, text="Enter File Name:")
-label_file_name.pack()
-entry_file_name = tk.Entry(window)
-entry_file_name.pack()
+    label_interest_rate = tk.Label(root, text="Interest Rate:")
+    label_interest_rate.pack()
+    entry_interest_rate = tk.Entry(root)
+    entry_interest_rate.insert(tk.END, "0.04")
+    entry_interest_rate.pack()
 
-label_option = tk.Label(window, text="Choose Weather Datasource:")
-label_option.pack()
-combo_option = ttk.Combobox(window, values=["Merra", "Era5", "DWD"])
-combo_option.pack()
+    label_lifetime = tk.Label(root, text="Lifetime (years):")
+    label_lifetime.pack()
+    entry_lifetime = tk.Entry(root)
+    entry_lifetime.insert(tk.END, "20")
+    entry_lifetime.pack()
 
-# Create a button to submit the inputs
-submit_button = tk.Button(window, text="Submit", command=process_inputs)
-submit_button.pack()
+    label_capex = tk.Label(root, text="Capex (€/kW):")
+    label_capex.pack()
+    entry_capex = tk.Entry(root)
+    entry_capex.insert(tk.END, "4500")
+    entry_capex.pack()
 
-# Check if the window is closed without entering data
-window.protocol("WM_DELETE_WINDOW",
-                lambda: messagebox.showerror("Missing Input", "Please fill in all required fields."))
+    label_save_path_powerdata = tk.Label(root, text="Save Path Power Data:")
+    label_save_path_powerdata.pack()
+    var_save_path_powerdata = tk.StringVar(root)
+    file_list = [f for f in os.listdir('weatherdata') if os.path.isfile(os.path.join('weatherdata', f))]
+    var_save_path_powerdata.set(file_list[0])
+    dropdown_save_path_powerdata = tk.OptionMenu(root, var_save_path_powerdata, *file_list)
+    dropdown_save_path_powerdata.pack()
 
-# Run the tkinter event loop
-window.mainloop()
+    # Speichern-Button
+    button_save = tk.Button(root, text="Speichern", command=save_values)
+    button_save.pack()
 
-# Show a confirmation message
-if all((alpha, z0, h, required_power, option, file_name)):
-    messagebox.showinfo("Input Received", "Variable values have been entered")
+    root.mainloop()
+
+    # Rückgabe der eingegebenen Werte
+    return (
+        float(roughness_length),
+        float(p_min),
+        float(single_cell_energy),
+        float(single_cell_cost),
+        float(interest_rate),
+        int(lifetime),
+        float(capex),
+        save_path_powerdata
+    )

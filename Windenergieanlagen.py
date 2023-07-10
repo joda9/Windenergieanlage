@@ -5,6 +5,7 @@ from wind_data_processing import *
 from calc_lcoe import * 
 from scaling_battery import * 
 from plots import * 
+from interface import *
 
 """
 Winddaten sowie technische Daten der Turbinen und Leistungskurven einlesen
@@ -15,15 +16,20 @@ save_path_powerdata = r'data/Wetterdaten_Wanna_Szenario_1.xlsx'     # Dateipfad 
 data_power_curve_path = r'data/powercurves_interpolated.csv'  # Dateipfad zur Leistungskurve
 data_tech_path = 'data/technical_information.xlsx'  # Dateipfad zu den technischen Daten
 
-# hub_height = 80.0  # Nabenhöhe der Windenergieanlage
-roughness_length =      0.1  # Rauhigkeitslänge
-p_min =                 .300  #kW
-single_cell_energy =    5120 / 1000 # kWh
-single_cell_cost =      1700    # €
-interest_rate=          0.04    #
-lifetime=               20      # a
-capex=                  4500    # €/kW
+# # hub_height = 80.0  # Nabenhöhe der Windenergieanlage
+# roughness_length =      0.1  # Rauhigkeitslänge
+# p_min =                 .300  #kW
+# single_cell_energy =    5120 / 1000 # kWh
+# single_cell_cost =      1700    # €
+# interest_rate=          0.04    #
+# lifetime=               20      # a
+# capex=                  4500    # €/kW
 
+
+"""
+UserInput
+"""
+roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata = get_user_values()
 
 """
 stündliche Leistungsdaten berechnen
