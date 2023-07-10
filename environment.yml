@@ -8,6 +8,7 @@ dependencies:
   - pip
   - python
   - matplotlib
+  - openpyxl
   - pip:
     - windrose
     - reliability
