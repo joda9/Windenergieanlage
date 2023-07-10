@@ -1,7 +1,4 @@
 name: WEA
-channels:
-  - conda-forge
-  - defaults
 dependencies:
   - pandas
   - jupyter

@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg 
 from wind_data_processing import * 
+from calc_lcoe import * 
+from scaling_battery import * 
+from plots import * 
 
 """
 Winddaten sowie technische Daten der Turbinen und Leistungskurven einlesen
@@ -10,20 +13,39 @@ Anschließend werden aus den Daten die Leistungen der Turbinen stundengenau ermi
 data_wind_path = r'data/Wetterdaten_Wanna_Szenario_1.txt'  # Dateipfad zu den Wetterdaten
 save_path_powerdata = r'data/Wetterdaten_Wanna_Szenario_1.xlsx'     # Dateipfad zur Speicherung der Daten in einer xlsx
 data_power_curve_path = r'data/powercurves_interpolated.csv'  # Dateipfad zur Leistungskurve
-data_tech_path = r'data/technical_information.xlsx'  # Dateipfad zu den technischen Daten
+data_tech_path = 'data/technical_information_lcoe.xlsx'  # Dateipfad zu den technischen Daten
 
 # hub_height = 80.0  # Nabenhöhe der Windenergieanlage
-roughness_length = 0.1  # Rauhigkeitslänge
-
-data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length)
-data_wind.to_excel(save_path_powerdata)
-# Verarbeitung der Winddaten und Anpassung der Leistungskurve
-
+roughness_length =      0.1  # Rauhigkeitslänge
+p_min =                 .300  #kW
+single_cell_energy =    5120 / 1000 # kWh
+single_cell_cost =      1700    # €
+interest_rate=          0.04    #
+lifetime=               20      # a
+capex=                  4500    # €/kW
 
 
 """
+stündliche Leistungsdaten berechnen
+"""
+# data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length)
+# data_wind.to_excel(save_path_powerdata)
 
 """
+LCOE berechnen
+"""
+# tech_lcoe = append_costs_df(capex, lifetime, interest_rate)
+# tech_lcoe.to_excel('data/technical_information_lcoe.xlsx')
+
+"""
+Scaling Battery
+"""
+tech_battery = calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tech_path)
+
+"""
+Plots
+"""
+plot_all(data_tech_path)
 
 # Turbinennamen bereinigen
 turbine_list = data_power_curve.columns[1:].str.strip().tolist()

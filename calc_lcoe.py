@@ -52,7 +52,7 @@ def calc_yield_cost_index(inv_costs, annual_yield):
     return round(yield_cost_index,2)
 
 
-def calculate_lcoe(inv_costs,yearly_costs,yearly_yield, interest_rate, lifetime):
+def calculate_lcoe(inv_costs, yearly_costs, yearly_yield, interest_rate, lifetime):
     """
     Calculates the LCOE of the wind turbine. The LCOE has the unit €/kWh.
     The yearly costs consider the fixed and variable costs as well as the
@@ -82,7 +82,7 @@ def calculate_lcoe(inv_costs,yearly_costs,yearly_yield, interest_rate, lifetime)
 
     return round(lcoe,2)
 
-def append_costs_df(capex):
+def append_costs_df(capex, lifetime, interest_rate):
     """
     TODO: Beschreibung anpassen, das hier soll nur zur Orientierung dienen.
     Die Gesamtinvestitionskosten besteht aus den Capex und den Nebenkosten für Montage
@@ -94,9 +94,11 @@ def append_costs_df(capex):
 
     :parameter
     capex: investment costs in €/kW.
+    lifetime: Lifetime of the product in years.
+    interest_rate: Interest rate in %.
 
     return
-        float: lcoe of all wind turbines
+        DataFrame: DataFrame with updated technical information
     """
 
     df_technical_infos = pd.read_excel('data/technical_information.xlsx')
@@ -115,12 +117,10 @@ def append_costs_df(capex):
         lcoe = calculate_lcoe(inv_costs=inv_costs,
                               yearly_costs=yearly_costs,
                               yearly_yield=df_cp_curves[turbine_name].sum(),
-                              interest_rate=0.04,
-                              lifetime=20)
+                              interest_rate=interest_rate,
+                              lifetime=lifetime)
 
         df_technical_infos.loc[index, 'LCOE'] = lcoe
 
     return df_technical_infos
 
-tech_lcoe = append_costs_df(capex=4500)
-tech_lcoe.to_excel('data/technical_information_lcoe.xlsx')
