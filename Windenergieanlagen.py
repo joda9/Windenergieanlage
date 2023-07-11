@@ -23,18 +23,27 @@ stündliche Leistungsdaten berechnen
 """
 data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length)
 data_wind.to_excel(save_path_powerdata)
-
-"""
-LCOE berechnen
-"""
-tech_lcoe = append_costs_df(capex, lifetime, interest_rate)
-tech_lcoe.to_excel(data_tech_path)
-
 """
 Scaling Battery
 """
 tech_battery = calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tech_path)
 tech_battery.to_excel(data_tech_path)
+
+"""
+LCOE berechnen
+"""
+for capex in range(1000,7000,500):
+    df = append_costs_df(capex, lifetime, interest_rate)
+    tech_battery[str('LCOE capex:'+str(capex)+'€/kW')] = df['LCOE'].values
+    print(capex)
+    
+capex = 4500
+for interest_rate in range(0, 51, 1):
+    df = append_costs_df(capex, lifetime, interest_rate/100)
+    tech_battery[str('LCOE interest rate:'+str(interest_rate/100)+'€')] = df['LCOE'].values
+    
+tech_battery.to_excel('data\technical_information_sens.xlsx')
+
 
 """
 Plots
