@@ -58,7 +58,7 @@ def plot_all(data_tech_path,nr_of_top):
     plt.grid(True)
 
     # Winddaten einlesen
-    data_wind = pd.read_csv(r'data/Wetterdaten_Wanna_Szenario_1.txt', delimiter=';')
+    data_wind = pd.read_csv(r'weatherdata/Wetterdaten_Wanna_Szenario_1.txt', delimiter=';')
     data_wind['MESS_DATUM'] = pd.to_datetime(data_wind['MESS_DATUM'], format='%Y%m%d%H')
     data_wind = data_wind.rename(columns={"STATIONS_ID": "StationID", "   F": "F", "   D": "D"})
 
