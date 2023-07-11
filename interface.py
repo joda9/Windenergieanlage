@@ -68,17 +68,30 @@ def get_user_values():
     entry_capex.insert(tk.END, "4500")
     entry_capex.pack()
 
+    label_data_wind_path = tk.Label(root, text="Data Wind Path:")
+    label_data_wind_path.pack()
+    var_data_wind_path = tk.StringVar(root)
+    data_wind_files = [f for f in os.listdir('weatherdata') if os.path.isfile(os.path.join('weatherdata', f))]
+    var_data_wind_path.set('Wetterdaten_Wanna_Szenario_1.txt')
+    dropdown_data_wind_path = tk.OptionMenu(root, var_data_wind_path, *data_wind_files)
+    dropdown_data_wind_path.pack()
+    
     label_save_path_powerdata = tk.Label(root, text="Save Path Power Data:")
     label_save_path_powerdata.pack()
+    
     entry_save_path_powerdata = tk.Entry(root)
     entry_save_path_powerdata.insert(tk.END, r'data/Wetterdaten_Wanna_Szenario_1.xlsx')
     entry_save_path_powerdata.pack()
+    
+    # Eingabefeld mit doppelter Breite
+    entry_save_path_powerdata.config(width=40)  # Doppelte Breite des Eingabefelds
+
 
     label_data_power_curve_path = tk.Label(root, text="Data Power Curve Path:")
     label_data_power_curve_path.pack()
     var_data_power_curve_path = tk.StringVar(root)
     data_power_curve_files = [f for f in os.listdir('data') if os.path.isfile(os.path.join('data', f))]
-    var_data_power_curve_path.set(data_power_curve_files[0])
+    var_data_power_curve_path.set('powercurves_interpolated.csv')
     dropdown_data_power_curve_path = tk.OptionMenu(root, var_data_power_curve_path, *data_power_curve_files)
     dropdown_data_power_curve_path.pack()
 
@@ -86,17 +99,10 @@ def get_user_values():
     label_data_tech_path.pack()
     var_data_tech_path = tk.StringVar(root)
     data_tech_files = [f for f in os.listdir('data') if os.path.isfile(os.path.join('data', f))]
-    var_data_tech_path.set(data_tech_files[0])
+    var_data_tech_path.set('technical_information.xlsx')
     dropdown_data_tech_path = tk.OptionMenu(root, var_data_tech_path, *data_tech_files)
     dropdown_data_tech_path.pack()
 
-    label_data_wind_path = tk.Label(root, text="Data Wind Path:")
-    label_data_wind_path.pack()
-    var_data_wind_path = tk.StringVar(root)
-    data_wind_files = [f for f in os.listdir('weatherdata') if os.path.isfile(os.path.join('weatherdata', f))]
-    var_data_wind_path.set(data_wind_files[0])
-    dropdown_data_wind_path = tk.OptionMenu(root, var_data_wind_path, *data_wind_files)
-    dropdown_data_wind_path.pack()
 
     # Speichern-Button
     button_save = tk.Button(root, text="Speichern", command=save_values)
