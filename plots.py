@@ -14,6 +14,20 @@ def plot_all(data_tech_path,nr_of_top):
     cost_data = cost_data.sort_values('Gesamtinvestitionskosten')
     cost_data = cost_data.head(nr_of_top)
     
+    lcoe_data = cost_data.sort_values('LCOE')
+    lcoe_data = lcoe_data.head(nr_of_top)
+    
+    turbine_names = lcoe_data['Turbine']
+    lcoe_values = lcoe_data['LCOE']
+    
+    plt.figure(figsize=(10, 6))
+    plt.bar(turbine_names, lcoe_values)
+    plt.xlabel('Kleinwindenergieanlagenmodell')
+    plt.ylabel('LCOE in €/kWh')
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+    plt.savefig('data/LCOE.png')
+    
     cost_data['Rückbaukosten'] = 6548
     cost_data['Investitionskosten'] = cost_data['Gesamtinvestitionskosten'] - 6548 # Abzug des Rückbaus, weil sonst doppelt im Plot
 
@@ -132,6 +146,20 @@ def plot_all(data_tech_path,nr_of_top):
     plt.title('Weibull-Verteilung der Windgeschwindigkeiten')
     plt.legend()
     plt.show()
+    
+    lcoe_data = cost_data.sort_values('LCOE')
+    lcoe_data = lcoe_data.head(nr_of_top)
+    
+    turbine_names = lcoe_data['Turbine']
+    lcoe_values = lcoe_data['LCOE']
+    
+    plt.figure(figsize=(10, 6))
+    plt.bar(turbine_names, lcoe_values)
+    plt.xlabel('Kleinwindenergieanlagenmodell')
+    plt.ylabel('LCOE in €/kWh')
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+    plt.savefig('data/LCOE.png')
 
     print('Weibull-Verteilungsfaktoren:')
     print('Formfaktor (Shape):', shape)
