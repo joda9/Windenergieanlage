@@ -42,7 +42,7 @@ for interest_rate in range(0, 51, 1):
     df = append_costs_df(capex, lifetime, interest_rate/100)
     tech_battery[str('LCOE interest rate:'+str(interest_rate/100)+'€')] = df['LCOE'].values
     
-tech_battery.to_excel('data\technical_information_sens.xlsx')
+tech_battery.to_excel(r'data\technical_information_sens.xlsx')
 
 
 """
