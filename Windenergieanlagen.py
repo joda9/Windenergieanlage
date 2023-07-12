@@ -32,7 +32,7 @@ tech_battery.to_excel(data_tech_path)
 """
 LCOE berechnen
 """
-for capex in range(1000,7000,500):
+for capex in range(500,10500,250):
     df = append_costs_df(capex, lifetime, interest_rate)
     tech_battery[str('LCOE capex:'+str(capex)+'€/kW')] = df['LCOE'].values
     print(capex)
