@@ -25,16 +25,16 @@ data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, 
 data_wind.to_excel(save_path_powerdata)
 
 """
-LCOE berechnen
-"""
-tech_lcoe = append_costs_df(capex, lifetime, interest_rate)
-tech_lcoe.to_excel(data_tech_path)
-
-"""
 Scaling Battery
 """
 tech_battery = calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tech_path)
 tech_battery.to_excel(data_tech_path)
+
+"""
+LCOE berechnen
+"""
+tech_lcoe = append_costs_df(capex, lifetime, interest_rate)
+tech_lcoe.to_excel(data_tech_path)
 
 """
 Plots
