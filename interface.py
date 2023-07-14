@@ -33,7 +33,7 @@ def get_user_values():
     entry_roughness_length.insert(tk.END, "0.1")
     entry_roughness_length.pack()
 
-    label_p_min = tk.Label(root, text="p_min (kW):")
+    label_p_min = tk.Label(root, text="Mindestleistung des Systems (kW):")
     label_p_min.pack()
     entry_p_min = tk.Entry(root)
     entry_p_min.insert(tk.END, "0.300")
