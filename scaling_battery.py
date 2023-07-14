@@ -11,7 +11,7 @@ def calculate_flauten_time(power_df, p_min, df_tech_infos):
         p_min (float): Mindestleistung.
         df_tech_infos (DataFrame): DataFrame mit den technischen Informationen.
     
-    Returns:
+    Ausgabe:
         DataFrame: DataFrame mit den aktualisierten technischen Informationen.
     """
     max_flauten_duration = []
@@ -23,7 +23,7 @@ def calculate_flauten_time(power_df, p_min, df_tech_infos):
         try:
             power = power_df[turbine]
             
-            # Find the calm wind duration for each turbine
+            # Flautensuche
             calm_wind_duration = []
             no_wind_duration = []
             current_duration = 0
@@ -41,11 +41,11 @@ def calculate_flauten_time(power_df, p_min, df_tech_infos):
                     no_wind_duration.append(current_duration)
                     current_duration = 0
     
-            # Append the last calm wind duration if it extends until the end
+            # Berücksichtigung Flauten am Ende des Betrachtungszeitraums
             if current_duration > 0:
                 calm_wind_duration.append(current_duration)
     
-           # Add the last calm wind duration if it extends until the end
+           # Speichern der längsten Perioden von Flaute und Windstille, sofern sie existieren
             if calm_wind_duration:
                 max_flauten_duration.append(max(calm_wind_duration))
                 df_tech_infos['max Flauten time'][turbine] = max(calm_wind_duration)
@@ -90,29 +90,29 @@ def calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tec
     Returns:
         DataFrame: DataFrame mit den aktualisierten technischen Informationen.
     """
-    # Read the power and technical information data
+    # Einlesen von Leistung und technischen Kennwerten
     power_data_path = "data/Wetterdaten_Wanna_Szenario_1.xlsx"
     power_df = pd.read_excel(power_data_path)
     df_tech_infos = pd.read_excel(data_tech_path)
     df_tech_infos = df_tech_infos.set_index('Turbine')
 
-    # Convert the date-time column to string format
+    # Date-Time_Index zu String
     power_df = power_df.applymap(str)
 
-    # Extract the turbine names
+    # Bestimmung Namen der Turbinen
     start_col_index = 8
     turbine_names = power_df.iloc[:, start_col_index:].columns.values.tolist()
 
-    # Convert power output data to float
+    # Umrechnung des Ausgabedateiformats in float
     power_df.iloc[:, start_col_index:] = power_df.iloc[:, start_col_index:].astype(float)
 
-    # Calculate the maximum calm wind duration
+    # Berechnung der maximalen Flautenzeit oder Windstillezeit über den gesamten DataFrame
     df_tech_infos = calculate_flauten_time(power_df, p_min, df_tech_infos)
 
-    # Calculate the required battery capacity and number of batteries
+    # Berechnung der benötigten Batteriekapazität und -Anzahl
     df_tech_infos = calculate_battery_capacity(df_tech_infos, p_min, single_cell_energy)
 
-    # Calculate the total cost of batteries
+    # Berechnung der Batteriekosten
     df_tech_infos['battery cost'] = df_tech_infos['number of batteries'] * single_cell_cost
 
     return df_tech_infos
