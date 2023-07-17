@@ -27,7 +27,8 @@ def get_user_values():
     root.geometry("400x550")  # Vergrößert die Höhe des Fensters
 
     # Label und Eingabefelder
-    label_roughness_length = tk.Label(root, text="Rauhigkeitslänge:")
+    label_roughness_length = tk.Label(root, text="Rauhigkeitslänge (m):")
+
     label_roughness_length.pack()
     entry_roughness_length = tk.Entry(root)
     entry_roughness_length.insert(tk.END, "0.1")

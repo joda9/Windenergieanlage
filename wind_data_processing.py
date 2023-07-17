@@ -5,6 +5,7 @@ from tqdm import tqdm
 import locale
 import requests
 from bs4 import BeautifulSoup
+import matplotlib.pyplot as plt
 
 
 def preprocess_power_curves(input_file, output_file):
@@ -155,6 +156,25 @@ def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_pat
             print(turbine, ' klappt nicht wegen', e) # Ausgabe einer Fehlermeldung, falls ein Fehler auftritt
 
     data_wind = pd.concat([data_wind, result_df], axis=1) # Zusammenführen der verarbeiteten Winddaten mit den Ergebnissen der Leistungskurve
+
+#    #plot der windverteilung
+ #   plt.figure(figsize=(10, 6))
+#    #data_wind.F.plot()
+#    a=data_wind.F*(np.log(50 / roughness_length) / np.log(10 / roughness_length))
+#    #a.plot()
+#    plt.scatter(x=a.index, y=a, s=2)
+#    plt.xlabel('Stunden des Jahres [h]')
+#    plt.axhline(y=2.5, color='r')
+#    plt.ylabel('Windstärke auf Messhöhe')
+#    plt.xticks(rotation=90)
+#    plt.show()
+#    x = [1, 2, 3, 4, 5]
+#    y = [2.5, 3.0, 2.8, 2.7, 3.2]
+
+    # Plot the data points as markers
+#    plt.scatter(x, y)
+
+
     return data_wind # Rückgabe der verarbeiteten Winddaten
 
 
