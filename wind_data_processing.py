@@ -5,6 +5,7 @@ from tqdm import tqdm
 import locale
 import requests
 from bs4 import BeautifulSoup
+import matplotlib.pyplot as plt
 
 
 def preprocess_power_curves(input_file, output_file):
@@ -47,7 +48,7 @@ def adjust_wind_speed(wind_speed, hub_height, roughness_length):
         hub_height (float): Nabenhöhe der Windenergieanlage.
         roughness_length (float): Rauhigkeitslänge.
     
-    Returns:
+    Ausgabe:
         float: Angepasste Windgeschwindigkeit.
     """
     adjusted_speed = np.round(wind_speed * (np.log(hub_height / roughness_length) / np.log(10 / roughness_length)), decimals=1)
@@ -66,18 +67,16 @@ def power_function(wind_speeds, cut_in, cut_out, rated_power, rated_wind, data_p
         rated_wind (float): Nenngeschwindigkeit der Windenergieanlage.
         data_power_curve (DataFrame): Leistungskurve der Windenergieanlage.
     
-    Returns:
+    Ausgabe:
         list: Liste der Leistungswerte.
     """
     power_values = []  # Liste zur Speicherung der Leistungswerte
     for wind_speed in wind_speeds:
         if wind_speed > cut_out:  # Falls die Windgeschwindigkeit größer als die Abschaltdrehzahl ist
             power_values.append(0)  # Leistungswert ist 0
-        elif wind_speed < cut_in :
-            # Falls die Windgeschwindigkeit kleiner als die Einschaltdrehzahl ist
+        elif wind_speed < cut_in :# Falls die Windgeschwindigkeit kleiner als die Einschaltdrehzahl ist 
             power_values.append(0)  # Leistungswert ist 0
-        elif (wind_speed < cut_out and wind_speed > rated_wind):
-            # Falls die Windgeschwindigkeit kleiner als die Abschaltdrehzahl und größer als die Nenngeschwindigkeit
+        elif (wind_speed < cut_out and wind_speed > rated_wind):# Falls die Windgeschwindigkeit kleiner als die Abschaltdrehzahl und größer als die Nenngeschwindigkeit
             power_values.append(rated_power) # Leistungswert = Nennleistung
         else:
             power = data_power_curve.loc[data_power_curve['wind_speed'] == wind_speed, turbine].values[0] # Leistungswert aus der Leistungskurve abrufen
@@ -96,7 +95,7 @@ def fit_power_curve(wind_speeds, roughness_length, data_tech, turbine, data_powe
         turbine (str): Name der Turbine.
         data_power_curve (DataFrame): Leistungskurve der Windenergieanlage.
     
-    Returns:
+    Ausgabe:
         list: Liste der Leistungswerte.
     """
 
@@ -120,7 +119,7 @@ def fit_power_curve(wind_speeds, roughness_length, data_tech, turbine, data_powe
     power_outputs = power_function(wind_speeds, cut_in, cut_out, rated_power, rated_wind, data_power_curve, turbine)
     return power_outputs
 
-def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length):
+def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length,p_per_y,lifetime):
     """
     Verarbeitet die Winddaten und passt die Leistungskurve an.
     
@@ -131,7 +130,7 @@ def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_pat
         hub_height (float): Nabenhöhe der Windenergieanlage.
         roughness_length (float): Rauhigkeitslänge.
     
-    Returns:
+    Ausgabe:
         DataFrame: Verarbeitete Winddaten.
     """
     data_wind = pd.read_csv(data_wind_path, delimiter=';')  # Einlesen der Wetterdaten aus einer CSV-Datei
@@ -146,14 +145,36 @@ def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_pat
     data_tech = pd.read_excel(data_tech_path, index_col='Turbine') # Einlesen der technischen Daten aus einer Excel-Datei
     
     
-    result_df = pd.DataFrame(index=data_wind.index)  # Leeres DataFrame zum Speichern der Ergebnisse der Anpassung der Leistungskurve
+    result_df = pd.DataFrame(index=data_wind.index)  # Leerer DataFrame zum Speichern der Ergebnisse der Anpassung der Leistungskurve
     for turbine in tqdm(data_power_curve.columns[1:]): # Iteration über jede Turbine in der Leistungskurve
         try:
-            result_df[turbine] = fit_power_curve(data_wind['F'], roughness_length, data_tech, turbine, data_power_curve) # Anpassung der Leistungskurve anhand der Windgeschwindigkeiten und Speicherung der Ergebnisse im DataFrame
+            a = fit_power_curve(data_wind['F'], roughness_length, data_tech, turbine, data_power_curve) # Anpassung der Leistungskurve anhand der Windgeschwindigkeiten und Speicherung der Ergebnisse im DataFrame
+            if sum(a)>p_per_y * lifetime:
+                result_df[turbine]=a
+
         except Exception as e:
             print(turbine, ' klappt nicht wegen', e) # Ausgabe einer Fehlermeldung, falls ein Fehler auftritt
 
     data_wind = pd.concat([data_wind, result_df], axis=1) # Zusammenführen der verarbeiteten Winddaten mit den Ergebnissen der Leistungskurve
+
+#    #plot der windverteilung
+ #   plt.figure(figsize=(10, 6))
+#    #data_wind.F.plot()
+#    a=data_wind.F*(np.log(50 / roughness_length) / np.log(10 / roughness_length))
+#    #a.plot()
+#    plt.scatter(x=a.index, y=a, s=2)
+#    plt.xlabel('Stunden des Jahres [h]')
+#    plt.axhline(y=2.5, color='r')
+#    plt.ylabel('Windstärke auf Messhöhe')
+#    plt.xticks(rotation=90)
+#    plt.show()
+#    x = [1, 2, 3, 4, 5]
+#    y = [2.5, 3.0, 2.8, 2.7, 3.2]
+
+    # Plot the data points as markers
+#    plt.scatter(x, y)
+
+
     return data_wind # Rückgabe der verarbeiteten Winddaten
 
 
@@ -166,7 +187,7 @@ def read_website_information(url):
     Args:
         url (str): URL der Webseite.
 
-    Returns:
+    Ausgabe:
         DataFrame: DataFrame mit den technischen Informationen.
     """
     # HTTP-Anfrage senden und den HTML-Inhalt erhalten
@@ -183,31 +204,24 @@ def read_website_information(url):
     tab_contents = soup.find_all("div", {"class": "TabContent"})  # Finden aller Elemente mit dem Tag "div" und der Klasse "TabContent"
 
     if tab_contents:
-        # Leeres DataFrame erstellen
         df = pd.DataFrame()  # Erstellen eines leeren Pandas DataFrame
 
-        # Durch die Tabellen iterieren
-        for tab_content in tab_contents:
+        for tab_content in tab_contents:# Durch die Tabellen iterieren
             # Datenzeilen extrahieren
             rows = tab_content.find_all("div", {"class": "row"})  # Finden aller Elemente mit dem Tag "div" und der Klasse "row"
 
-            # Leeres DataFrame erstellen
-            data = []
+            data = []# Leeres DataFrame erstellen
 
-            # Durch die Datenzeilen iterieren und Werte extrahieren
-            for row in rows:
+            for row in rows:# Durch die Datenzeilen iterieren und Werte extrahieren
                 left_col = row.find("div", {"class": "col-left"}).text.strip()  # Extrahieren des Texts aus dem Elements mit der Klasse "col-left"
                 right_col = row.find("div", {"class": "col-right"}).text.strip()  # Extrahieren des Texts aus dem Elements mit der Klasse "col-right"
                 data.append([left_col, right_col])  # Hinzufügen der Werte zur Datenliste
 
             # DataFrame erstellen
             temp_df = pd.DataFrame(data, columns=['Property', "Value"]).set_index(['Property'])  # Erstellen eines temporären DataFrames mit den extrahierten Werten
-            # Das aktuelle DataFrame an das Gesamt-DataFrame anhängen
             df = pd.concat([df, temp_df])  # Zusammenführen des temporären DataFrames mit dem Gesamt-DataFrame
 
-        # Doppelte Spalten entfernen
         df1 = df.drop_duplicates(keep='first')  # Entfernen von doppelten Spalten aus dem DataFrame, wobei die erste Instanz beibehalten wird
-        # Nur die erste Instanz der doppelten Spalte behalten
         df1 = df1[~df1.index.duplicated(keep='first')]  # Entfernen von doppelten Zeilen aus dem DataFrame, wobei die erste Instanz beibehalten wird
         df1 = df1.set_index(df1.index).transpose()  # Transponieren des DataFrames und Setzen der Indexspalte als Spaltennamen
         return df1, title  # Rückgabe des vorverarbeiteten DataFrames
@@ -224,7 +238,7 @@ def add_website_infos(df):
     Args:
         df (DataFrame): DataFrame mit den Webseiten-Links.
 
-    Returns:
+    Ausgabe:
         DataFrame: DataFrame mit dem hinzugefügten Titel und technischen Infos.
     """
     # Neue Spalte "Turbine" zum DataFrame hinzufügen
@@ -256,7 +270,6 @@ def add_website_infos(df):
 
                     df_technical_infos.at[index, 'check'] = 1  # Aktualisieren der "check"-Spalte auf 1, um anzuzeigen, dass der Link verarbeitet wurde
 
-                    # Den Titel in die entsprechende Zeile des DataFrames einfügen
                     df_technical_infos.at[index, "Turbine"] = title  # Hinzufügen des Titels in die "Turbine"-Spalte des DataFrames
 
                     df_technical_infos.to_excel('data/technical_information.xlsx')  # Speichern des aktualisierten DataFrames in einer Excel-Datei

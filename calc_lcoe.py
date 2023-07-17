@@ -3,15 +3,14 @@ import os
 
 def calc_flh_cap_factor(installed_cap, annual_yield):
     """
-    Calculates full load hours and also capacity factor
-    of wind turbine
+    Berechnet Volllaststunden und Kapazitätsfaktor der WEA
 
-    :parameter
-    installed_cap: installed nominal capacity in kW.
-    annual_yield: annual yield in kWh.
+    Parameter:
+    installed_cap: Installierte nominelle Kapazität in kW.
+    annual_yield: Jährlicher Ertrag in kWh.
 
-    return
-        float: full load hours and capacity factor of wind turbine
+    Ausgabe
+        float: Volllaststunden und Kapazitätsfaktor der WEA
     """
     flh = annual_yield/installed_cap
     cap_factor = flh/8760
@@ -20,15 +19,14 @@ def calc_flh_cap_factor(installed_cap, annual_yield):
 
 def calc_investment_cost_index (inv_costs, installed_cap):
     """
-    Calculates the performance-specific investment cost index (Leistungsspezifischer Investitionskostenindex)
-    in €/kW.
+    Berechnet den Leistungsspezifischen Investitionskostenindex  in €/kW.
 
     :parameter
-    inv_costs: investment costs in €.
-    installed_cap: installed nominal capacity in kW.
+    inv_costs: Investitionskosten in €.
+    installed_cap: Installierte nominelle Kapazität in kW.
 
-    return
-        float: the performance-specific investment cost index
+    Ausgabe:
+        float: Der leistungsspezifische Investitionskostenindex
     """
 
     inv_cost_index = inv_costs/installed_cap
@@ -36,15 +34,14 @@ def calc_investment_cost_index (inv_costs, installed_cap):
 
 def calc_yield_cost_index(inv_costs, annual_yield):
     """
-    Calculathe the yield-specific investment cost index (Ertragsspezifischer Investitionskostenindex)
-    in €/kWh.
+    berechnet den Ertragsspezifischen Investitionskostenindex in €/kWh.
 
     :parameter
-     inv_costs: investment costs in €.
-     annual_yield: annual yield in kWh.
+     inv_costs: Investitionskosten in €.
+     annual_yield: Jährlicher Ertrag in kWh.
 
-    return
-        float: the yield-specific investment cost index
+    Ausgabe
+        float: Der ertragsspezifische Investitionskostenindex
     """
 
     yield_cost_index= inv_costs/annual_yield
@@ -54,19 +51,18 @@ def calc_yield_cost_index(inv_costs, annual_yield):
 
 def calculate_lcoe(inv_costs, yearly_costs, yearly_yield, interest_rate, lifetime):
     """
-    Calculates the LCOE of the wind turbine. The LCOE has the unit €/kWh.
-    The yearly costs consider the fixed and variable costs as well as the
-    availability of the wind turbine.
+    Berechnet die LCOE der WEA in €/kWh.
+    Jährliche Kosten berücksichtigen fixe und variable Kosten, sowie die Verfügbarkeit der Anlage
 
     :parameter:
-        inv_costs: investment costs in €.
-        yearly_costs (float): Yearly costs in €/a.
-        yearly_yield (float): Yearly yield of wind turbine in kWh
-        interest_rate (float): Interest rate in %.
-        lifetime (int): Lifetime of the product in years.
+        inv_costs: Investitionskosten in €.
+        yearly_costs (float): Jährliche Kosten in €/a.
+        yearly_yield (float): Jährlicher Ertrag der WEA in kWh
+        interest_rate (float): Zinssatz in %.
+        lifetime (int): Erwartete Betriebsdauer der Anlage in Jahren.
 
-    return
-        float: The LCOE of the wind turbine
+    Ausgabe:
+        float: LCOE der WEA
     """
 
     data = {'disk_invest': [], 'disk_ertrag': []}
@@ -84,21 +80,25 @@ def calculate_lcoe(inv_costs, yearly_costs, yearly_yield, interest_rate, lifetim
 
 def append_costs_df(capex, lifetime, interest_rate):
     """
-    TODO: Beschreibung anpassen, das hier soll nur zur Orientierung dienen.
+    Berechnet Dataframe unter Anderem mit relevanten ökonomischen Kennwerten.
+
     Die Gesamtinvestitionskosten besteht aus den Capex und den Nebenkosten für Montage
     mit 31.8% (https://www.hs-augsburg.de/~rk/downloads/projektarbeit-windkraft.pdf).
-    Die O&M können variieren zwischen 1 und 3% (https://iopscience.iop.org/article/10.1088/1755-1315/410/1/012047/pdf)
+    
+    Die O&M ('Betriebskosten') können variieren zwischen 1 und 3% (https://iopscience.iop.org/article/10.1088/1755-1315/410/1/012047/pdf)
     oder 3.7% (https://www.hs-augsburg.de/~rk/downloads/projektarbeit-windkraft.pdf)
+    In diesem Programm wurden pauschal 2% angesetzt
+
     Rückbau wird zunächst pauschal auf 6548 € gesetzt. Die Summe ergibt sich aus Tabelle 16/17/18.
     (https://www.umweltbundesamt.de/sites/default/files/medien/1410/publikationen/2019_10_09_texte_117-2019_uba_weacycle_mit_summary_and_abstract_170719_final_v4_pdfua_0.pdf)
 
     :parameter
-    capex: investment costs in €/kW.
-    lifetime: Lifetime of the product in years.
-    interest_rate: Interest rate in %.
+    capex: Investitionskosten in €/kW.
+    lifetime: Betriebsdauer der WEA in Jahren.
+    interest_rate: Zinssatz in %.
 
-    return
-        DataFrame: DataFrame with updated technical information
+    Ausgabe:
+        DataFrame: DataFrame df_technical_infos mit berechneten wirtschaftlichen Kenngrößen
     """
 
     df_technical_infos = pd.read_excel('data/technical_information.xlsx')
@@ -108,7 +108,7 @@ def append_costs_df(capex, lifetime, interest_rate):
                                                      + df_technical_infos['battery cost'] + 6548
     df_technical_infos['Betriebskosten'] = ((df_technical_infos['Rated power:'] * capex) * 0.02)
 
-    # Get the cost value from the 'costs' column
+    # Berechnet den LCOE mithilfe der Funktion calculate_lcoe und speichert ihn in einer neuen Spalte ab
     for index, row in df_technical_infos.iterrows():
         turbine_name = row['Turbine']
         inv_costs = row['Gesamtinvestitionskosten']
