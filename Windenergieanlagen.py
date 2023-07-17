@@ -14,7 +14,7 @@ Anschließend werden aus den Daten die Leistungen der Turbinen stundengenau ermi
 
 
 """
-UserInput
+Nutzereingabe
 """
 roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata, data_power_curve_path, data_tech_path, data_wind_path = get_user_values()
 
@@ -25,7 +25,7 @@ data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, 
 data_wind.to_excel(save_path_powerdata)
 
 """
-Scaling Battery
+Batteriedimensionierung
 """
 tech_battery = calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tech_path)
 tech_battery.to_excel(data_tech_path)
