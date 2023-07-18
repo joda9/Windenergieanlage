@@ -21,22 +21,18 @@ roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, li
 stündliche Leistungsdaten berechnen
 """
 data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length)
+
 # Speichern der Turbinen mit einer Leistung > 45000 kWh für plots
-data_wind_red = data_wind.copy()
-Turbines_bigger_45kWh = data_wind_red.iloc[:, 8:].cumsum(axis=0).columns[(data_wind_red.iloc[:, 8:].cumsum(axis=0).iloc[-1, :] >= 45000)].tolist()
+#data_wind_red = data_wind.copy()
+#Turbines_bigger_45kWh = data_wind_red.iloc[:, 8:].cumsum(axis=0).columns[(data_wind_red.iloc[:, 8:].cumsum(axis=0).iloc[-1, :] >= 45000)].tolist()
 
-
-#selected_turbines = data_wind_red.iloc[:, 8:].cumsum(axis=1).columns[data_wind_red.iloc[:, 8:].cumsum(axis=1).iloc[:, -1] >= 45000].tolist()
-#data_wind_red_filtered = data_wind_red[data_wind_red['Turbines'].isin(selected_turbines)]
-
-
-
+#Speichern der Leistungstabelle
 data_wind.to_excel(save_path_powerdata)
 
 """
 Batteriedimensionierung
 """
-tech_battery = calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tech_path)
+tech_battery = calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tech_path, save_path_powerdata)
 tech_battery.to_excel(data_tech_path)
 
 """
@@ -49,4 +45,4 @@ tech_lcoe.to_excel(data_tech_path)
 """
 Plots
 """
-plot_all(data_tech_path, Turbines_bigger_45kWh, nr_of_top=15)
+plot_all(data_tech_path, save_path_powerdata, nr_of_top=15)

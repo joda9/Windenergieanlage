@@ -4,12 +4,17 @@ import matplotlib.pyplot as plt
 from windrose import WindroseAxes
 from scipy.stats import weibull_min
 
-def plot_all(data_tech_path, Turbines_bigger_45kWh, nr_of_top):
+def plot_all(data_tech_path, save_path_powerdata, nr_of_top):
     '''
     Dieses Modul beinhaltet die Funktionen für den Plot einer Windrose und der Weibullverteilung
     und Kostenvergleich.
     '''
 
+    #Filtern von Anlagen kleiner als 45MWh im Jahr
+    data_wind_red = pd.read_excel(save_path_powerdata)
+    Turbines_bigger_45kWh = data_wind_red.iloc[:, 8:].cumsum(axis=0).columns[(data_wind_red.iloc[:, 8:].cumsum(axis=0).iloc[-1, :] >= 45000)].tolist()
+
+    #Erstellen von sortierten dfs für die plots
     cost_data_raw = pd.read_excel(data_tech_path).set_index('Turbine')
     cost_data_45kW_raw = cost_data_raw.copy()
 
@@ -24,7 +29,8 @@ def plot_all(data_tech_path, Turbines_bigger_45kWh, nr_of_top):
 
     lcoe_values = lcoe_data['LCOE']
     lcoe_values_45kW = lcoe_data_45kW['LCOE']
-    
+
+    #plot der LCOE
     plt.figure(figsize=(10, 6))
     plt.bar(turbine_names, lcoe_values)
     plt.xlabel('Kleinwindenergieanlagenmodell')
@@ -42,7 +48,8 @@ def plot_all(data_tech_path, Turbines_bigger_45kWh, nr_of_top):
     plt.xticks(rotation=90)
     plt.tight_layout()
     plt.savefig('data/LCOE45.png')
-    
+
+    #Erstellung dfs für Gesamt- und Nebenkosten
     cost_data['Rückbaukosten'] = 6548
     cost_data['Investitionskosten'] = cost_data['Gesamtinvestitionskosten'] - 6548 # Abzug des Rückbaus, weil sonst doppelt im Plot
 

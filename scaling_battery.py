@@ -48,9 +48,9 @@ def calculate_flauten_time(power_df, p_min, df_tech_infos):
            # Add the last calm wind duration if it extends until the end
             if calm_wind_duration:
                 max_flauten_duration.append(max(calm_wind_duration))
-                df_tech_infos['max Flauten time'][turbine] = max(calm_wind_duration)
+                df_tech_infos.loc[turbine, 'max Flauten time'] = max(calm_wind_duration)
             if no_wind_duration:
-                df_tech_infos['Flautenzeit'][turbine] = max(no_wind_duration)
+                df_tech_infos.loc[turbine, 'Flautenzeit'] = max(calm_wind_duration)
         except Exception as e:
             print(e)
     
@@ -77,7 +77,7 @@ def calculate_battery_capacity(df_tech_infos, p_min, single_cell_energy):
 
 
 
-def calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tech_path):
+def calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tech_path, save_path_powerdata):
     """
     Berechnet die Batteriekosten basierend auf den gegebenen Parametern.
     
@@ -91,8 +91,8 @@ def calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tec
         DataFrame: DataFrame mit den aktualisierten technischen Informationen.
     """
     # Read the power and technical information data
-    power_data_path = "data/Wetterdaten_Wanna_Szenario_1.xlsx"
-    power_df = pd.read_excel(power_data_path)
+    #power_data_path = pd.read_excel(save_path_powerdata)
+    power_df = pd.read_excel(save_path_powerdata)
     df_tech_infos = pd.read_excel(data_tech_path)
     df_tech_infos = df_tech_infos.set_index('Turbine')
 
