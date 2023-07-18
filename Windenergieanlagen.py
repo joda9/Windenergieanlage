@@ -16,18 +16,20 @@ Anschließend werden aus den Daten die Leistungen der Turbinen stundengenau ermi
 """
 Nutzereingabe
 """
-roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata, data_power_curve_path, data_tech_path, data_wind_path = get_user_values()
+roughness_length, p_per_y, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata, data_power_curve_path, data_tech_path, data_wind_path = get_user_values()
+
 
 """
 stündliche Leistungsdaten berechnen
 """
-data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length)
+data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length, p_per_y, lifetime)
 data_wind.to_excel(save_path_powerdata)
+
 
 """
 Batteriedimensionierung
 """
-tech_battery = calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tech_path)
+tech_battery = calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tech_path, p_per_y, save_path_powerdata)
 tech_battery.to_excel(data_tech_path)
 
 """
@@ -40,3 +42,4 @@ tech_lcoe.to_excel(data_tech_path)
 Plots
 """
 plot_all(data_tech_path,nr_of_top=15)
+

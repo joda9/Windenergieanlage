@@ -7,9 +7,10 @@ def get_user_values():
 
     # Funktion zum Speichern der Werte und Beenden der GUI
     def save_values():
-        global roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata, data_power_curve_path, data_tech_path, data_wind_path
+        global roughness_length, p_per_y, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata, data_power_curve_path, data_tech_path, data_wind_path
         roughness_length = float(entry_roughness_length.get())
         p_min = float(entry_p_min.get())
+        p_per_y = float(entry_p_per_y.get())
         single_cell_energy = float(entry_single_cell_energy.get())
         single_cell_cost = float(entry_single_cell_cost.get())
         interest_rate = float(entry_interest_rate.get())
@@ -27,16 +28,24 @@ def get_user_values():
 
     # Label und Eingabefelder
     label_roughness_length = tk.Label(root, text="Rauhigkeitslänge (m):")
+
     label_roughness_length.pack()
     entry_roughness_length = tk.Entry(root)
     entry_roughness_length.insert(tk.END, "0.1")
     entry_roughness_length.pack()
 
-    label_p_min = tk.Label(root, text="Mindestleistung (kW):")
+
+    label_p_min = tk.Label(root, text="Mindestleistung des Systems (kW):")
     label_p_min.pack()
     entry_p_min = tk.Entry(root)
     entry_p_min.insert(tk.END, "0.300")
     entry_p_min.pack()
+
+    label_p_per_y = tk.Label(root, text="Jahresleistung (kWh):")
+    label_p_per_y.pack()
+    entry_p_per_y = tk.Entry(root)
+    entry_p_per_y.insert(tk.END, "85000")
+    entry_p_per_y.pack()
 
     label_single_cell_energy = tk.Label(root, text="Batteriezellkapazität (kWh):")
     label_single_cell_energy.pack()
@@ -44,7 +53,7 @@ def get_user_values():
     entry_single_cell_energy.insert(tk.END, str(5120 / 1000))
     entry_single_cell_energy.pack()
 
-    label_single_cell_cost = tk.Label(root, text="Single Cell Cost (€):")
+    label_single_cell_cost = tk.Label(root, text="Batteriezellkosten (€):")
     label_single_cell_cost.pack()
     entry_single_cell_cost = tk.Entry(root)
     entry_single_cell_cost.insert(tk.END, "1700")
@@ -68,7 +77,9 @@ def get_user_values():
     entry_capex.insert(tk.END, "4500")
     entry_capex.pack()
 
+
     label_data_wind_path = tk.Label(root, text="Pfad Windgeschwindigkeitsmessung:")
+
     label_data_wind_path.pack()
     var_data_wind_path = tk.StringVar(root)
     data_wind_files = [f for f in os.listdir('weatherdata') if os.path.isfile(os.path.join('weatherdata', f))]
@@ -84,10 +95,10 @@ def get_user_values():
     entry_save_path_powerdata.pack()
     
     # Eingabefeld mit doppelter Breite
-    entry_save_path_powerdata.config(width=40)  # Doppelte Breite des Eingabefelds
+    entry_save_path_powerdata.config(width=40)  
 
 
-    label_data_power_curve_path = tk.Label(root, text="Pfad Leistungskurven:")
+    label_data_power_curve_path = tk.Label(root, text="Pfad zur Leistungsdatei:")
     label_data_power_curve_path.pack()
     var_data_power_curve_path = tk.StringVar(root)
     data_power_curve_files = [f for f in os.listdir('data') if os.path.isfile(os.path.join('data', f))]
@@ -95,7 +106,8 @@ def get_user_values():
     dropdown_data_power_curve_path = tk.OptionMenu(root, var_data_power_curve_path, *data_power_curve_files)
     dropdown_data_power_curve_path.pack()
 
-    label_data_tech_path = tk.Label(root, text="Pfad technische Informationen:")
+
+    label_data_tech_path = tk.Label(root, text="Pfad zur Technologiedatei:")
     label_data_tech_path.pack()
     var_data_tech_path = tk.StringVar(root)
     data_tech_files = [f for f in os.listdir('data') if os.path.isfile(os.path.join('data', f))]
@@ -114,6 +126,7 @@ def get_user_values():
     return (
         float(roughness_length),
         float(p_min),
+        float(p_per_y),
         float(single_cell_energy),
         float(single_cell_cost),
         float(interest_rate),
