@@ -5,6 +5,7 @@ from tqdm import tqdm
 import locale
 import requests
 from bs4 import BeautifulSoup
+import matplotlib.pyplot as plt
 
 
 def preprocess_power_curves(input_file, output_file):
@@ -73,7 +74,8 @@ def power_function(wind_speeds, cut_in, cut_out, rated_power, rated_wind, data_p
     for wind_speed in wind_speeds:
         if wind_speed > cut_out:  # Falls die Windgeschwindigkeit größer als die Abschaltdrehzahl ist
             power_values.append(0)  # Leistungswert ist 0
-        elif wind_speed < cut_in :# Falls die Windgeschwindigkeit kleiner als die Einschaltdrehzahl ist
+
+        elif wind_speed < cut_in :# Falls die Windgeschwindigkeit kleiner als die Einschaltdrehzahl ist 
             power_values.append(0)  # Leistungswert ist 0
         elif (wind_speed < cut_out and wind_speed > rated_wind):# Falls die Windgeschwindigkeit kleiner als die Abschaltdrehzahl und größer als die Nenngeschwindigkeit
             power_values.append(rated_power) # Leistungswert = Nennleistung
@@ -144,14 +146,35 @@ def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_pat
     data_tech = pd.read_excel(data_tech_path, index_col='Turbine') # Einlesen der technischen Daten aus einer Excel-Datei
     
     
-    result_df = pd.DataFrame(index=data_wind.index)  # Leeres DataFrame zum Speichern der Ergebnisse der Anpassung der Leistungskurve
+    result_df = pd.DataFrame(index=data_wind.index)  # Leerer DataFrame zum Speichern der Ergebnisse der Anpassung der Leistungskurve
     for turbine in tqdm(data_power_curve.columns[1:]): # Iteration über jede Turbine in der Leistungskurve
         try:
-            result_df[turbine] = fit_power_curve(data_wind['F'], roughness_length, data_tech, turbine, data_power_curve) # Anpassung der Leistungskurve anhand der Windgeschwindigkeiten und Speicherung der Ergebnisse im DataFrame
+            a = fit_power_curve(data_wind['F'], roughness_length, data_tech, turbine, data_power_curve) # Anpassung der Leistungskurve anhand der Windgeschwindigkeiten und Speicherung der Ergebnisse im DataFrame
+
+
         except Exception as e:
             print(turbine, ' klappt nicht wegen', e) # Ausgabe einer Fehlermeldung, falls ein Fehler auftritt
 
     data_wind = pd.concat([data_wind, result_df], axis=1) # Zusammenführen der verarbeiteten Winddaten mit den Ergebnissen der Leistungskurve
+
+#    #plot der windverteilung
+ #   plt.figure(figsize=(10, 6))
+#    #data_wind.F.plot()
+#    a=data_wind.F*(np.log(50 / roughness_length) / np.log(10 / roughness_length))
+#    #a.plot()
+#    plt.scatter(x=a.index, y=a, s=2)
+#    plt.xlabel('Stunden des Jahres [h]')
+#    plt.axhline(y=2.5, color='r')
+#    plt.ylabel('Windstärke auf Messhöhe')
+#    plt.xticks(rotation=90)
+#    plt.show()
+#    x = [1, 2, 3, 4, 5]
+#    y = [2.5, 3.0, 2.8, 2.7, 3.2]
+
+    # Plot the data points as markers
+#    plt.scatter(x, y)
+
+
     return data_wind # Rückgabe der verarbeiteten Winddaten
 
 
@@ -181,11 +204,9 @@ def read_website_information(url):
     tab_contents = soup.find_all("div", {"class": "TabContent"})  # Finden aller Elemente mit dem Tag "div" und der Klasse "TabContent"
 
     if tab_contents:
-        # Leeres DataFrame erstellen
         df = pd.DataFrame()  # Erstellen eines leeren Pandas DataFrame
 
-        # Durch die Tabellen iterieren
-        for tab_content in tab_contents:
+        for tab_content in tab_contents:# Durch die Tabellen iterieren
             # Datenzeilen extrahieren
             rows = tab_content.find_all("div", {"class": "row"})  # Finden aller Elemente mit dem Tag "div" und der Klasse "row"
 
@@ -198,12 +219,9 @@ def read_website_information(url):
 
             # DataFrame erstellen
             temp_df = pd.DataFrame(data, columns=['Property', "Value"]).set_index(['Property'])  # Erstellen eines temporären DataFrames mit den extrahierten Werten
-            # Das aktuelle DataFrame an das Gesamt-DataFrame anhängen
             df = pd.concat([df, temp_df])  # Zusammenführen des temporären DataFrames mit dem Gesamt-DataFrame
 
-        # Doppelte Spalten entfernen
         df1 = df.drop_duplicates(keep='first')  # Entfernen von doppelten Spalten aus dem DataFrame, wobei die erste Instanz beibehalten wird
-        # Nur die erste Instanz der doppelten Spalte behalten
         df1 = df1[~df1.index.duplicated(keep='first')]  # Entfernen von doppelten Zeilen aus dem DataFrame, wobei die erste Instanz beibehalten wird
         df1 = df1.set_index(df1.index).transpose()  # Transponieren des DataFrames und Setzen der Indexspalte als Spaltennamen
         return df1, title  # Rückgabe des vorverarbeiteten DataFrames

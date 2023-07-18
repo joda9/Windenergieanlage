@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="197bb964-7e24-4abd-9e8f-5773f01bcc36" name="Changes" comment="Hab die Texte übersetzt und manche kommentare gelöscht">
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_23_[Changes]/Wetterdaten_Wanna_Szenario_1.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_23_[Changes]/shelved.patch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_23_[Changes]/technical_information.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_23__Changes_.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_42_[Changes]/Wetterdaten_Wanna_Szenario_1.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_42_[Changes]/shelved.patch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_42_[Changes]/technical_information.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_42__Changes_.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_45_[Changes]/Wetterdaten_Wanna_Szenario_1.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_45_[Changes]/shelved.patch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_45_[Changes]/technical_information.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_45__Changes_.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Windenergieanlagen.py" beforeDir="false" afterPath="$PROJECT_DIR$/Windenergieanlagen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/calc_lcoe.py" beforeDir="false" afterPath="$PROJECT_DIR$/calc_lcoe.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/Gesamtinvestitionskosten.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/Gesamtinvestitionskosten.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/LCOE.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/LCOE.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/Nebenkosten.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/Nebenkosten.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/Wetterdaten_Wanna_Szenario_1.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/Wetterdaten_Wanna_Szenario_1.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/technical_information.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/technical_information.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/interface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plots.py" beforeDir="false" afterPath="$PROJECT_DIR$/plots.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scaling_battery.py" beforeDir="false" afterPath="$PROJECT_DIR$/scaling_battery.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wind_data_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/wind_data_processing.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="Filtern_der_Plots" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="projectConfigVersion" value="5" />
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1689692122" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="Filtern_der_Plots" />
+                    <option name="lastUsedInstant" value="1689667227" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="Übersetzen-und-Filtern" />
+                    <option name="lastUsedInstant" value="1689667090" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="Create_Interface" />
+                    <option name="lastUsedInstant" value="1689278229" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="Implement-interface-as-data-source" />
+                    <option name="lastUsedInstant" value="1689008119" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2SOJO8bL6fza3gl7xek7sPrCbRD" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "Merging Filtern__der__plots",
+    "last_opened_file_path": "C:/Users/greif/PycharmProjects/Windenergieanlage"
+  }
+}]]></component>
+  <component name="RunManager" selected="Python.Windenergieanlagen">
+    <configuration name="Windenergieanlagen" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Windenergieanlage" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Windenergieanlagen.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="plots" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="Windenergieanlage" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\greif\anaconda3\envs\WEA\python.exe" />
+      <option name="SDK_NAME" value="WEA" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/plots.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.Windenergieanlagen" />
+        <item itemvalue="Python.Windenergieanlagen" />
+        <item itemvalue="Python.Windenergieanlagen" />
+        <item itemvalue="Python.Windenergieanlagen" />
+        <item itemvalue="Python.Windenergieanlagen" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="197bb964-7e24-4abd-9e8f-5773f01bcc36" name="Changes" comment="" />
+      <created>1689011662612</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1689011662612</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Hallo, ich habe die Übersetzungen gemacht und bis jetzt versucht die plots so umzugestalten, dass nur anlagen gezeigt werden, die auch tatsächlich den eingegebenen Jahresbedarf erzeugen können. Es ist mir, warum auch immer, nicht gelungen. Nachdem ich kurz davor war das Rätsel zu lösen ist der code komplett abgeschmiert, und ich bekomme nichts mehr raus. Wenn jemande Zeit (lol) und Lust (lol) hat daran noch weiterzuarbeiten, tobe er oder sie sich aus!">
+      <option name="closed" value="true" />
+      <created>1689593977093</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1689593977093</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Hab die Texte übersetzt und manche kommentare gelöscht">
+      <option name="closed" value="true" />
+      <created>1689596353956</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1689596353956</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Hallo, ich habe die Übersetzungen gemacht und bis jetzt versucht die plots so umzugestalten, dass nur anlagen gezeigt werden, die auch tatsächlich den eingegebenen Jahresbedarf erzeugen können. Es ist mir, warum auch immer, nicht gelungen. Nachdem ich kurz davor war das Rätsel zu lösen ist der code komplett abgeschmiert, und ich bekomme nichts mehr raus. Wenn jemande Zeit (lol) und Lust (lol) hat daran noch weiterzuarbeiten, tobe er oder sie sich aus!" />
+    <MESSAGE value="Hab die Texte übersetzt und manche kommentare gelöscht" />
+    <option name="LAST_COMMIT_MESSAGE" value="Hab die Texte übersetzt und manche kommentare gelöscht" />
+  </component>
+</project>

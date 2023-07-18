@@ -20,6 +20,7 @@ p_req, roughness_length, p_min, single_cell_energy, single_cell_cost, interest_r
 """
 stündliche Leistungsdaten berechnen
 """
+
 data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length)
 
 # Speichern der Turbinen mit einer Leistung > 45000 kWh für plots
@@ -27,7 +28,8 @@ data_wind = process_data(data_wind_path, data_power_curve_path, data_tech_path, 
 #Turbines_bigger_45kWh = data_wind_red.iloc[:, 8:].cumsum(axis=0).columns[(data_wind_red.iloc[:, 8:].cumsum(axis=0).iloc[-1, :] >= 45000)].tolist()
 
 #Speichern der Leistungstabelle
-data_wind.to_excel(save_path_powerdata)
+
+
 
 """
 Batteriedimensionierung
@@ -45,4 +47,8 @@ tech_lcoe.to_excel(data_tech_path)
 """
 Plots
 """
+
 plot_all(data_tech_path, save_path_powerdata, p_req, nr_of_top=15)
+
+
+

@@ -5,7 +5,6 @@ def calc_flh_cap_factor(installed_cap, annual_yield):
     """
     Berechnet Volllaststunden und Kapazitätsfaktor der WEA
 
-
     :parameter
     installed_cap: Installierte nominelle Kapazität in kW.
     annual_yield: Jährlicher Ertrag in kWh.
@@ -20,15 +19,14 @@ def calc_flh_cap_factor(installed_cap, annual_yield):
 
 def calc_investment_cost_index (inv_costs, installed_cap):
     """
-    Berechnet den Leistungsspezifischen Investitionskostenindex in €/kW
-
+    Berechnet den leistungsspezifischen Investitionskostenindex  in €/kW.
 
     :parameter
     inv_costs: Investitionskosten in €.
     installed_cap: Installierte nominelle Kapazität in kW.
 
-    Ausgabe
-        float: Leistungsspezifischen Investitionskostenindex
+    Ausgabe:
+        float: Der leistungsspezifische Investitionskostenindex
     """
 
     inv_cost_index = inv_costs/installed_cap
@@ -39,8 +37,8 @@ def calc_yield_cost_index(inv_costs, annual_yield):
     Berechnet den Ertragsspezifischer Investitionskostenindex in €/kWh
 
     :parameter
-     inv_costs: investment costs in €.
-     annual_yield: annual yield in kWh.
+     inv_costs: Investitionskosten in €.
+     annual_yield: Jährlicher Ertrag in kWh.
 
     Ausgabe
         float: Ertragsspezifischer Investitionskostenindex
@@ -53,18 +51,18 @@ def calc_yield_cost_index(inv_costs, annual_yield):
 
 def calculate_lcoe(inv_costs, yearly_costs, yearly_yield, interest_rate, lifetime):
     """
-    Berechnet den LCOE der WEA in €/kWh unter Berücksichtigung fixer und variabler Kosten
-    der jährlichen Kosten.
+    Berechnet die LCOE der WEA in €/kWh.
+    Jährliche Kosten berücksichtigen fixe und variable Kosten, sowie die Verfügbarkeit der Anlage
 
     :parameter:
         inv_costs: Investitionskosten in €.
         yearly_costs (float): Jährliche Kosten in €/a.
         yearly_yield (float): Jährlicher Ertrag der WEA in kWh
         interest_rate (float): Zinssatz in %.
-        lifetime (int): Lebensdauer der WEA in years.
+        lifetime (int): Erwartete Betriebsdauer der Anlage in Jahren.
 
-    return
-        float: Der LCOE der WEA
+    Ausgabe:
+        float: LCOE der WEA
     """
 
     data = {'disk_invest': [], 'disk_ertrag': []}
@@ -88,12 +86,12 @@ def append_costs_df(capex, lifetime, interest_rate):
     dem LCOE der einzelnen Anlagen erweitert.
 
     :parameter
-    capex: investment costs in €/kW.
-    lifetime: Lifetime of the product in years.
-    interest_rate: Interest rate in %.
+    capex: Investitionskosten in €/kW.
+    lifetime: Betriebsdauer der WEA in Jahren.
+    interest_rate: Zinssatz in %.
 
-    return
-        DataFrame: DataFrame with updated technical information
+    Ausgabe:
+        DataFrame: DataFrame df_technical_infos mit berechneten wirtschaftlichen Kenngrößen
     """
 
     df_technical_infos = pd.read_excel('data/technical_information.xlsx')
@@ -103,7 +101,7 @@ def append_costs_df(capex, lifetime, interest_rate):
                                                      + df_technical_infos['battery cost']
     df_technical_infos['Betriebskosten'] = ((df_technical_infos['Rated power:'] * capex) * 0.02) + 6548
 
-    # Get the cost value from the 'costs' column
+    # Berechnet den LCOE mithilfe der Funktion calculate_lcoe und speichert ihn in einer neuen Spalte ab
     for index, row in df_technical_infos.iterrows():
         turbine_name = row['Turbine']
         inv_costs = row['Gesamtinvestitionskosten']

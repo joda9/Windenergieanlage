@@ -1,0 +1,40 @@
+Index: scaling_battery.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pandas as pd\r\nimport numpy as np\r\n\r\ndef calculate_flauten_time(power_df, p_min, df_tech_infos):\r\n    \"\"\"\r\n    Berechnet die längste windstille Dauer und Flautenzeit für jede Turbine.\r\n    \r\n    Args:\r\n        power_df (DataFrame): DataFrame mit den Leistungsdaten.\r\n        p_min (float): Mindestleistung.\r\n        df_tech_infos (DataFrame): DataFrame mit den technischen Informationen.\r\n    \r\n    Ausgabe:\r\n        DataFrame: DataFrame df_tech_infos mit Spalte, in der die Flautenlänge gespeichert ist.\r\n    \"\"\"\r\n    #max_flauten_duration = []\r\n    #max_0P = []\r\n    df_tech_infos['max Flauten time'] = {}\r\n    df_tech_infos['Flautenzeit'] = {}\r\n    \r\n    for turbine in power_df.columns[7:]:\r\n        try:\r\n            power = power_df[turbine]\r\n            \r\n            # Flautensuche\r\n            calm_wind_duration = []\r\n            no_wind_duration = []\r\n            current_duration = 0\r\n    \r\n            for p in power.astype(float):\r\n                if p < (p_min / 2):\r\n                    current_duration += 1\r\n                else:\r\n                    calm_wind_duration.append(current_duration)\r\n                    current_duration = 0\r\n\r\n            # Berücksichtigung Flauten am Ende des Betrachtungszeitraums\r\n            if current_duration > 0:\r\n                calm_wind_duration.append(current_duration)\r\n\r\n            for p in power.astype(float):\r\n                if p == 0:\r\n                    current_duration += 1\r\n                else:\r\n                    no_wind_duration.append(current_duration)\r\n                    current_duration = 0\r\n    \r\n            # Berücksichtigung Flauten am Ende des Betrachtungszeitraums\r\n            if current_duration > 0:\r\n                no_wind_duration.append(current_duration)\r\n\r\n           # Speichern der längsten Perioden von Flaute und Windstille, sofern sie existieren\r\n            if calm_wind_duration:\r\n                #max_flauten_duration.append(max(calm_wind_duration))\r\n                df_tech_infos.loc[turbine,'max Flauten time'] = max(calm_wind_duration)\r\n            if no_wind_duration:\r\n                df_tech_infos.loc[turbine, 'Flautenzeit'] = max(no_wind_duration)\r\n        except Exception as e:\r\n            print(e)\r\n    \r\n    return df_tech_infos\r\n\r\n\r\ndef calculate_battery_capacity(df_tech_infos, p_min, single_cell_energy):\r\n    \"\"\"\r\n    Berechnet die erforderliche Batteriekapazität und Anzahl der Batterien.\r\n    \r\n    Args:\r\n        df_tech_infos (DataFrame): DataFrame mit den technischen Informationen.\r\n        p_min (float): Mindestleistung.\r\n        single_cell_energy (float): Energiekapazität einer einzelnen Batteriezelle.\r\n    \r\n    Returns:\r\n        DataFrame: DataFrame mit den aktualisierten technischen Informationen.\r\n    \"\"\"\r\n    df_tech_infos['Battery Capacity'] = df_tech_infos['max Flauten time'] * p_min\r\n    df_tech_infos['Battery Capacity'] = df_tech_infos['Battery Capacity'].fillna(0)  # NaN-Werte mit 0 ersetzen\r\n    df_tech_infos['number of batteries'] = np.ceil(df_tech_infos['Battery Capacity'] / single_cell_energy)\r\n    \r\n    return df_tech_infos\r\n\r\n\r\n\r\ndef calculate_battery_cost(p_min, single_cell_energy, single_cell_cost, data_tech_path, p_per_y, save_path_powerdata):\r\n    \"\"\"\r\n    Berechnet die Batteriekosten basierend auf den gegebenen Parametern.\r\n    \r\n    Args:\r\n        p_min (float): Mindestleistung.\r\n        single_cell_energy (float): Energiekapazität einer einzelnen Batteriezelle.\r\n        single_cell_cost (float): Kosten einer einzelnen Batteriezelle.\r\n        data_tech_path (str): Pfad zur Datei mit den technischen Informationen.\r\n    \r\n    Returns:\r\n        DataFrame: DataFrame mit den aktualisierten technischen Informationen.\r\n    \"\"\"\r\n    # Einlesen von Leistung und technischen Kennwerten\r\n    power_df = pd.read_excel(save_path_powerdata)#\"data/Wetterdaten_Wanna_Szenario_1.xlsx\"\r\n    df_tech_infos = pd.read_excel(data_tech_path, index_col=1)\r\n\r\n    # Date-Time_Index zu String\r\n    power_df = power_df.applymap(str)\r\n\r\n    # Bestimmung Namen der Turbinen\r\n    start_col_index = 8\r\n    turbine_names = power_df.iloc[:, start_col_index:].columns.values.tolist()\r\n\r\n\r\n\r\n    # Umrechnung des Ausgabedateiformats in float\r\n    power_df.iloc[:, start_col_index:] = power_df.iloc[:, start_col_index:].astype(float)\r\n\r\n    for turbine in turbine_names:\r\n        if power_df[turbine].sum() < p_per_y:\r\n            power_df.drop(turbine, axis='columns', inplace=True)\r\n            df_tech_infos.drop(turbine, axis= 'index', inplace=True)\r\n\r\n\r\n    # Berechnung der maximalen Flautenzeit oder Windstillezeit über den gesamten DataFrame\r\n    df_tech_infos = calculate_flauten_time(power_df, p_min, df_tech_infos)\r\n\r\n    # Berechnung der benötigten Batteriekapazität und -Anzahl\r\n    df_tech_infos = calculate_battery_capacity(df_tech_infos, p_min, single_cell_energy)\r\n\r\n    # Berechnung der Batteriekosten\r\n    df_tech_infos['battery cost'] = df_tech_infos['number of batteries'] * single_cell_cost\r\n\r\n    return df_tech_infos\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/scaling_battery.py b/scaling_battery.py
+--- a/scaling_battery.py	(revision b3c1b246236d83fafa5167c7a443a72bd222c7ee)
++++ b/scaling_battery.py	(date 1689615761912)
+@@ -95,8 +95,8 @@
+         DataFrame: DataFrame mit den aktualisierten technischen Informationen.
+     """
+     # Einlesen von Leistung und technischen Kennwerten
+-    power_df = pd.read_excel(save_path_powerdata)#"data/Wetterdaten_Wanna_Szenario_1.xlsx"
+-    df_tech_infos = pd.read_excel(data_tech_path, index_col=1)
++    power_df = pd.read_excel(save_path_powerdata)  #"data/Wetterdaten_Wanna_Szenario_1.xlsx"
++    df_tech_infos = pd.read_excel(data_tech_path).set_index('Turbine', inplace=True, drop=True)
+ 
+     # Date-Time_Index zu String
+     power_df = power_df.applymap(str)
+@@ -105,17 +105,14 @@
+     start_col_index = 8
+     turbine_names = power_df.iloc[:, start_col_index:].columns.values.tolist()
+ 
+-
+-
+     # Umrechnung des Ausgabedateiformats in float
+     power_df.iloc[:, start_col_index:] = power_df.iloc[:, start_col_index:].astype(float)
+ 
+     for turbine in turbine_names:
+         if power_df[turbine].sum() < p_per_y:
+             power_df.drop(turbine, axis='columns', inplace=True)
+-            df_tech_infos.drop(turbine, axis= 'index', inplace=True)
++            df_tech_infos.drop(turbine, axis='index', inplace=True)
+ 
+-
+     # Berechnung der maximalen Flautenzeit oder Windstillezeit über den gesamten DataFrame
+     df_tech_infos = calculate_flauten_time(power_df, p_min, df_tech_infos)
+ 
