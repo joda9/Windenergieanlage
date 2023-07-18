@@ -4,15 +4,15 @@ import matplotlib.pyplot as plt
 from windrose import WindroseAxes
 from scipy.stats import weibull_min
 
-def plot_all(data_tech_path, save_path_powerdata, nr_of_top):
+def plot_all(data_tech_path, save_path_powerdata, p_req, nr_of_top):
     '''
     Dieses Modul beinhaltet die Funktionen für den Plot einer Windrose und der Weibullverteilung
     und Kostenvergleich.
     '''
 
-    #Filtern von Anlagen kleiner als 45MWh im Jahr
+    #Filtern von Anlagen kleiner als bedarf im Jahr
     data_wind_red = pd.read_excel(save_path_powerdata)
-    Turbines_bigger_45kWh = data_wind_red.iloc[:, 8:].cumsum(axis=0).columns[(data_wind_red.iloc[:, 8:].cumsum(axis=0).iloc[-1, :] >= 45000)].tolist()
+    Turbines_bigger_45kWh = data_wind_red.iloc[:, 8:].cumsum(axis=0).columns[(data_wind_red.iloc[:, 8:].cumsum(axis=0).iloc[-1, :] >= p_req)].tolist()
 
     #Erstellen von sortierten dfs für die plots
     cost_data_raw = pd.read_excel(data_tech_path).set_index('Turbine')
@@ -44,7 +44,7 @@ def plot_all(data_tech_path, save_path_powerdata, nr_of_top):
     plt.bar(turbine_names_45kW, lcoe_values_45kW)
     plt.xlabel('Kleinwindenergieanlagenmodell')
     plt.ylabel('LCOE in €/kWh')
-    plt.title('LCOE für Turbinen größer 45MWh')
+    plt.title('LCOE für Turbinen größer '+ str(round(p_req)) + " kWh")
     plt.xticks(rotation=90)
     plt.tight_layout()
     plt.savefig('data/LCOE45.png')
@@ -92,7 +92,7 @@ def plot_all(data_tech_path, save_path_powerdata, nr_of_top):
     plt.bar(cost_data_45kW_Ges, cost_data_45kW.loc[cost_data_45kW_Ges]['Rückbaukosten'], bottom=cost_data_45kW.loc[cost_data_45kW_Ges]['Stacked Costs'] - cost_data_45kW.loc[cost_data_45kW_Ges]['Rückbaukosten'], label='Rückbau')
     plt.xlabel('Kleinwindenergieanlagenmodell')
     plt.ylabel('Gesamtkosten in €')
-    plt.title('Gesamtkostenvergleich der Kleinwindenergieanlagen größer 45MWh')
+    plt.title('Gesamtkostenvergleich der Kleinwindenergieanlagen größer ' + str(round(p_req)) + " kWh")
     plt.legend()
     plt.xticks(rotation=90)
     plt.tight_layout()
@@ -118,7 +118,7 @@ def plot_all(data_tech_path, save_path_powerdata, nr_of_top):
     plt.bar(cost_data_45kW_Neb, cost_data_45kW.loc[cost_data_45kW_Neb]['Rückbaukosten'], bottom=cost_data_45kW.loc[cost_data_45kW_Neb]['Betriebskosten'] + cost_data_45kW.loc[cost_data_45kW_Neb]['battery cost'], label='Rückbaukosten', color='red')
     plt.xlabel('Kleinwindenergieanlagenmodell')
     plt.ylabel('Nebenkosten in €')
-    plt.title('Nebenkostenvergleich der Kleinwindenergieanlagen größer 45MWh')
+    plt.title('Nebenkostenvergleich der Kleinwindenergieanlagen größer ' + str(round(p_req)) + " kWh")
     plt.legend()
     plt.xticks(rotation=90)
     plt.tight_layout()

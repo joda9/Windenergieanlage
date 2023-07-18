@@ -15,7 +15,7 @@ Anschließend werden aus den Daten die Leistungen der Turbinen stundengenau ermi
 """
 Nutzereingabe
 """
-roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata, data_power_curve_path, data_tech_path, data_wind_path = get_user_values()
+p_req, roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata, data_power_curve_path, data_tech_path, data_wind_path = get_user_values()
 
 """
 stündliche Leistungsdaten berechnen
@@ -45,4 +45,4 @@ tech_lcoe.to_excel(data_tech_path)
 """
 Plots
 """
-plot_all(data_tech_path, save_path_powerdata, nr_of_top=15)
+plot_all(data_tech_path, save_path_powerdata, p_req, nr_of_top=15)

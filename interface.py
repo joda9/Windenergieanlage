@@ -7,7 +7,8 @@ def get_user_values():
 
     # Funktion zum Speichern der Werte und Beenden der GUI
     def save_values():
-        global roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata, data_power_curve_path, data_tech_path, data_wind_path
+        global p_req, roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata, data_power_curve_path, data_tech_path, data_wind_path
+        p_req = float(entry_p_req.get())
         roughness_length = float(entry_roughness_length.get())
         p_min = float(entry_p_min.get())
         single_cell_energy = float(entry_single_cell_energy.get())
@@ -26,7 +27,13 @@ def get_user_values():
     root.geometry("400x550")  # Vergrößert die Höhe des Fensters
 
     # Label und Eingabefelder
-    label_roughness_length = tk.Label(root, text="Rauhigkeitslänge (m):")
+    label_p_req = tk.Label(root, text="Jahresenergiebedarf (kWh):")
+    label_p_req.pack()
+    entry_p_req = tk.Entry(root)
+    entry_p_req.insert(tk.END, "85000")
+    entry_p_req.pack()
+
+    label_roughness_length = tk.Label(root, text="Rauigkeitslänge (m):")
     label_roughness_length.pack()
     entry_roughness_length = tk.Entry(root)
     entry_roughness_length.insert(tk.END, "0.1")
@@ -112,6 +119,7 @@ def get_user_values():
 
     # Rückgabe der eingegebenen Werte
     return (
+        float(p_req),
         float(roughness_length),
         float(p_min),
         float(single_cell_energy),
