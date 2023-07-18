@@ -5,7 +5,7 @@ def calc_flh_cap_factor(installed_cap, annual_yield):
     """
     Berechnet Volllaststunden und Kapazitätsfaktor der WEA
 
-    Parameter:
+    :parameter
     installed_cap: Installierte nominelle Kapazität in kW.
     annual_yield: Jährlicher Ertrag in kWh.
 
@@ -19,7 +19,7 @@ def calc_flh_cap_factor(installed_cap, annual_yield):
 
 def calc_investment_cost_index (inv_costs, installed_cap):
     """
-    Berechnet den Leistungsspezifischen Investitionskostenindex  in €/kW.
+    Berechnet den leistungsspezifischen Investitionskostenindex  in €/kW.
 
     :parameter
     inv_costs: Investitionskosten in €.
@@ -34,14 +34,14 @@ def calc_investment_cost_index (inv_costs, installed_cap):
 
 def calc_yield_cost_index(inv_costs, annual_yield):
     """
-    berechnet den Ertragsspezifischen Investitionskostenindex in €/kWh.
+    Berechnet den Ertragsspezifischer Investitionskostenindex in €/kWh
 
     :parameter
      inv_costs: Investitionskosten in €.
      annual_yield: Jährlicher Ertrag in kWh.
 
     Ausgabe
-        float: Der ertragsspezifische Investitionskostenindex
+        float: Ertragsspezifischer Investitionskostenindex
     """
 
     yield_cost_index= inv_costs/annual_yield
@@ -80,17 +80,10 @@ def calculate_lcoe(inv_costs, yearly_costs, yearly_yield, interest_rate, lifetim
 
 def append_costs_df(capex, lifetime, interest_rate):
     """
-    Berechnet Dataframe unter Anderem mit relevanten ökonomischen Kennwerten.
-
-    Die Gesamtinvestitionskosten besteht aus den Capex und den Nebenkosten für Montage
-    mit 31.8% (https://www.hs-augsburg.de/~rk/downloads/projektarbeit-windkraft.pdf).
-    
-    Die O&M ('Betriebskosten') können variieren zwischen 1 und 3% (https://iopscience.iop.org/article/10.1088/1755-1315/410/1/012047/pdf)
-    oder 3.7% (https://www.hs-augsburg.de/~rk/downloads/projektarbeit-windkraft.pdf)
-    In diesem Programm wurden pauschal 2% angesetzt
-
-    Rückbau wird zunächst pauschal auf 6548 € gesetzt. Die Summe ergibt sich aus Tabelle 16/17/18.
-    (https://www.umweltbundesamt.de/sites/default/files/medien/1410/publikationen/2019_10_09_texte_117-2019_uba_weacycle_mit_summary_and_abstract_170719_final_v4_pdfua_0.pdf)
+    Nach Eingabe von Capex, Betriebsdauer und Zinssatz einer geplanten Anlage liest die Funktion eine Tabelle mit
+    technischen Informationen, sowie mit Wetter- und Anlagendaten ein.
+    Anschließend werden die technischen Informationen mit Berechnungen zu Betriebs- und Gesamtkosten, sowie
+    dem LCOE der einzelnen Anlagen erweitert.
 
     :parameter
     capex: Investitionskosten in €/kW.

@@ -1,0 +1,14 @@
+<changelist name="Uncommitted_changes_before_Checkout_at_17_07_2023_19_23_[Changes]" date="1689614592360" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_23_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 17.07.2023 19:23 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="data/Wetterdaten_Wanna_Szenario_1.xlsx" />
+    <option name="AFTER_PATH" value="data/Wetterdaten_Wanna_Szenario_1.xlsx" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_23_[Changes]/Wetterdaten_Wanna_Szenario_1.xlsx" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="data/technical_information.xlsx" />
+    <option name="AFTER_PATH" value="data/technical_information.xlsx" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_23_[Changes]/technical_information.xlsx" />
+  </binary>
+</changelist>

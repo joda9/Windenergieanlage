@@ -74,6 +74,7 @@ def power_function(wind_speeds, cut_in, cut_out, rated_power, rated_wind, data_p
     for wind_speed in wind_speeds:
         if wind_speed > cut_out:  # Falls die Windgeschwindigkeit größer als die Abschaltdrehzahl ist
             power_values.append(0)  # Leistungswert ist 0
+
         elif wind_speed < cut_in :# Falls die Windgeschwindigkeit kleiner als die Einschaltdrehzahl ist 
             power_values.append(0)  # Leistungswert ist 0
         elif (wind_speed < cut_out and wind_speed > rated_wind):# Falls die Windgeschwindigkeit kleiner als die Abschaltdrehzahl und größer als die Nenngeschwindigkeit
@@ -241,7 +242,6 @@ def add_website_infos(df):
     Ausgabe:
         DataFrame: DataFrame mit dem hinzugefügten Titel und technischen Infos.
     """
-    # Neue Spalte "Turbine" zum DataFrame hinzufügen
     df["Turbine"] = ""  # Hinzufügen einer leeren Spalte mit dem Namen "Turbine" zum DataFrame
 
     # Alle Links im DataFrame durchgehen
