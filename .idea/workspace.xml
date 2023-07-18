@@ -5,6 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="197bb964-7e24-4abd-9e8f-5773f01bcc36" name="Changes" comment="Hab die Texte übersetzt und manche kommentare gelöscht">
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_23_[Changes]/Wetterdaten_Wanna_Szenario_1.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_23_[Changes]/shelved.patch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_23_[Changes]/technical_information.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_23__Changes_.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_42_[Changes]/Wetterdaten_Wanna_Szenario_1.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_42_[Changes]/shelved.patch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_42_[Changes]/technical_information.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_42__Changes_.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_45_[Changes]/Wetterdaten_Wanna_Szenario_1.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_45_[Changes]/shelved.patch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_45_[Changes]/technical_information.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2023_19_45__Changes_.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Windenergieanlagen.py" beforeDir="false" afterPath="$PROJECT_DIR$/Windenergieanlagen.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/calc_lcoe.py" beforeDir="false" afterPath="$PROJECT_DIR$/calc_lcoe.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/Gesamtinvestitionskosten.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/Gesamtinvestitionskosten.png" afterDir="false" />
@@ -84,7 +97,7 @@
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Merging main",
+    "git-widget-placeholder": "Merging Filtern__der__plots",
     "last_opened_file_path": "C:/Users/greif/PycharmProjects/Windenergieanlage"
   }
 }]]></component>

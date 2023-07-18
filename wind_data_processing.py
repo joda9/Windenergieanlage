@@ -120,7 +120,7 @@ def fit_power_curve(wind_speeds, roughness_length, data_tech, turbine, data_powe
     power_outputs = power_function(wind_speeds, cut_in, cut_out, rated_power, rated_wind, data_power_curve, turbine)
     return power_outputs
 
-def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length,p_per_y,lifetime):
+def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_path_powerdata, roughness_length):
     """
     Verarbeitet die Winddaten und passt die Leistungskurve an.
     
@@ -150,8 +150,7 @@ def process_data(data_wind_path, data_power_curve_path, data_tech_path, save_pat
     for turbine in tqdm(data_power_curve.columns[1:]): # Iteration über jede Turbine in der Leistungskurve
         try:
             a = fit_power_curve(data_wind['F'], roughness_length, data_tech, turbine, data_power_curve) # Anpassung der Leistungskurve anhand der Windgeschwindigkeiten und Speicherung der Ergebnisse im DataFrame
-            if sum(a)>p_per_y * lifetime:
-                result_df[turbine]=a
+
 
         except Exception as e:
             print(turbine, ' klappt nicht wegen', e) # Ausgabe einer Fehlermeldung, falls ein Fehler auftritt

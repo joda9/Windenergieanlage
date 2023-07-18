@@ -4,30 +4,52 @@ import matplotlib.pyplot as plt
 from windrose import WindroseAxes
 from scipy.stats import weibull_min
 
-def plot_all(data_tech_path,nr_of_top):
+def plot_all(data_tech_path, save_path_powerdata, p_req, nr_of_top):
     '''
     Dieses Modul beinhaltet die Funktionen für den Plot einer Windrose und der Weibullverteilung
     und Kostenvergleich.
     '''
 
-    cost_data = pd.read_excel(data_tech_path)
-    cost_data = cost_data.sort_values('Gesamtinvestitionskosten')
-    cost_data = cost_data.head(nr_of_top)
-    
-    lcoe_data = cost_data.sort_values('LCOE')
-    lcoe_data = lcoe_data.head(nr_of_top)
-    
-    turbine_names = lcoe_data['Turbine']
+    #Filtern von Anlagen kleiner als bedarf im Jahr
+    data_wind_red = pd.read_excel(save_path_powerdata)
+    Turbines_bigger_45kWh = data_wind_red.iloc[:, 8:].cumsum(axis=0).columns[(data_wind_red.iloc[:, 8:].cumsum(axis=0).iloc[-1, :] >= p_req)].tolist()
+
+    #Erstellen von sortierten dfs für die plots
+    cost_data_raw = pd.read_excel(data_tech_path).set_index('Turbine')
+    cost_data_45kW_raw = cost_data_raw.copy()
+
+    cost_data = cost_data_raw.copy()
+    cost_data_45kW = cost_data_45kW_raw.copy().loc[Turbines_bigger_45kWh]
+
+    lcoe_data = cost_data_raw.copy().sort_values('LCOE').head(nr_of_top)
+    lcoe_data_45kW = cost_data_45kW_raw.copy().loc[Turbines_bigger_45kWh].sort_values('LCOE').head(nr_of_top)
+
+    turbine_names = lcoe_data.index
+    turbine_names_45kW = lcoe_data_45kW.index
+
     lcoe_values = lcoe_data['LCOE']
-    
+    lcoe_values_45kW = lcoe_data_45kW['LCOE']
+
+    #plot der LCOE
     plt.figure(figsize=(10, 6))
     plt.bar(turbine_names, lcoe_values)
     plt.xlabel('Kleinwindenergieanlagenmodell')
     plt.ylabel('LCOE in €/kWh')
+    plt.title('LCOE')
     plt.xticks(rotation=90)
     plt.tight_layout()
     plt.savefig('data/LCOE.png')
-    
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(turbine_names_45kW, lcoe_values_45kW)
+    plt.xlabel('Kleinwindenergieanlagenmodell')
+    plt.ylabel('LCOE in €/kWh')
+    plt.title('LCOE für Turbinen größer '+ str(round(p_req)) + " kWh")
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+    plt.savefig('data/LCOE45.png')
+
+    #Erstellung dfs für Gesamt- und Nebenkosten
     cost_data['Rückbaukosten'] = 6548
     cost_data['Investitionskosten'] = cost_data['Gesamtinvestitionskosten'] - 6548 # Abzug des Rückbaus, weil sonst doppelt im Plot
 
@@ -35,34 +57,74 @@ def plot_all(data_tech_path,nr_of_top):
                                           cost_data['Betriebskosten'] + cost_data['battery cost'] + \
                                           cost_data['Rückbaukosten']
 
+    cost_data_Neb=(cost_data['Stacked Costs']-cost_data['Investitionskosten']).sort_values().head(nr_of_top).index
+    cost_data_Ges=cost_data.sort_values('Stacked Costs').head(nr_of_top).index
+
+    cost_data_45kW['Rückbaukosten'] = 6548
+    cost_data_45kW['Investitionskosten'] = cost_data_45kW['Gesamtinvestitionskosten'] - 6548 # Abzug des Rückbaus, weil sonst doppelt im Plot
+
+    cost_data_45kW['Stacked Costs'] = cost_data_45kW['Investitionskosten'] + \
+                                          cost_data_45kW['Betriebskosten'] + cost_data_45kW['battery cost'] + \
+                                          cost_data_45kW['Rückbaukosten']
+
+    cost_data_45kW_Neb=(cost_data_45kW['Stacked Costs']-cost_data_45kW['Investitionskosten']).sort_values().head(nr_of_top).index
+    cost_data_45kW_Ges=cost_data_45kW.sort_values('Stacked Costs').head(nr_of_top).index
+
     # Plot für die gestapelten Kosten der KWEA
     plt.figure(figsize=(15, 10))
-    plt.bar(cost_data['Turbine'], cost_data['Investitionskosten'], label='Investitionskosten')
-    plt.bar(cost_data['Turbine'], cost_data['Betriebskosten'], bottom=cost_data['Investitionskosten'], label='Betriebskosten')
-    plt.bar(cost_data['Turbine'], cost_data['battery cost'], bottom=cost_data['Investitionskosten'] + cost_data['Betriebskosten'], label='Batteriekosten')
-    plt.bar(cost_data['Turbine'], cost_data['Rückbaukosten'], bottom=cost_data['Stacked Costs'] - cost_data['Rückbaukosten'], label='Rückbau')
+    plt.bar(cost_data_Ges, cost_data.loc[cost_data_Ges]['Investitionskosten'], label='Investitionskosten')
+    plt.bar(cost_data_Ges, cost_data.loc[cost_data_Ges]['Betriebskosten'], bottom=cost_data.loc[cost_data_Ges]['Investitionskosten'], label='Betriebskosten')
+    plt.bar(cost_data_Ges, cost_data.loc[cost_data_Ges]['battery cost'], bottom=cost_data.loc[cost_data_Ges]['Investitionskosten'] + cost_data.loc[cost_data_Ges]['Betriebskosten'], label='Batteriekosten')
+    plt.bar(cost_data_Ges, cost_data.loc[cost_data_Ges]['Rückbaukosten'], bottom=cost_data.loc[cost_data_Ges]['Stacked Costs'] - cost_data.loc[cost_data_Ges]['Rückbaukosten'], label='Rückbau')
     plt.xlabel('Kleinwindenergieanlagenmodell')
     plt.ylabel('Gesamtkosten in €')
     plt.ylim(0, (cost_data['Investitionskosten']+cost_data['Betriebskosten']+cost_data['battery cost']+cost_data['Rückbaukosten']).max().max())
     plt.title('Gesamtkostenvergleich der Kleinwindenergieanlagen')
     plt.legend()
-    plt.xticks(rotation=45)
+    plt.xticks(rotation=90)
     plt.tight_layout()
     plt.savefig('data/Gesamtinvestitionskosten.png')
 
+    # Plot für die gestapelten Kosten der KWEA
+    plt.figure(figsize=(15, 10))
+    plt.bar(cost_data_45kW_Ges, cost_data_45kW.loc[cost_data_45kW_Ges]['Investitionskosten'], label='Investitionskosten')
+    plt.bar(cost_data_45kW_Ges, cost_data_45kW.loc[cost_data_45kW_Ges]['Betriebskosten'], bottom=cost_data_45kW.loc[cost_data_45kW_Ges]['Investitionskosten'], label='Betriebskosten')
+    plt.bar(cost_data_45kW_Ges, cost_data_45kW.loc[cost_data_45kW_Ges]['battery cost'], bottom=cost_data_45kW.loc[cost_data_45kW_Ges]['Investitionskosten'] + cost_data_45kW.loc[cost_data_45kW_Ges]['Betriebskosten'], label='Batteriekosten')
+    plt.bar(cost_data_45kW_Ges, cost_data_45kW.loc[cost_data_45kW_Ges]['Rückbaukosten'], bottom=cost_data_45kW.loc[cost_data_45kW_Ges]['Stacked Costs'] - cost_data_45kW.loc[cost_data_45kW_Ges]['Rückbaukosten'], label='Rückbau')
+    plt.xlabel('Kleinwindenergieanlagenmodell')
+    plt.ylabel('Gesamtkosten in €')
+    plt.title('Gesamtkostenvergleich der Kleinwindenergieanlagen größer ' + str(round(p_req)) + " kWh")
+    plt.legend()
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+    plt.savefig('data/Gesamtinvestitionskosten45.png')
+
     # Plot für die Nebenkosten und Rückbau einer KWEA.
     plt.figure(figsize=(15, 10))
-    plt.bar(cost_data['Turbine'], cost_data['Betriebskosten'], label='Betriebskosten', color='green')
-    plt.bar(cost_data['Turbine'], cost_data['battery cost'], bottom=cost_data['Betriebskosten'], label='Batteriekosten', color='orange')
-    plt.bar(cost_data['Turbine'], cost_data['Rückbaukosten'], bottom=cost_data['Betriebskosten'] + cost_data['battery cost'], label='Rückbaukosten', color='red')
+    plt.bar(cost_data_Neb, cost_data.loc[cost_data_Neb]['Betriebskosten'], label='Betriebskosten', color='green')
+    plt.bar(cost_data_Neb, cost_data.loc[cost_data_Neb]['battery cost'], bottom=cost_data.loc[cost_data_Neb]['Betriebskosten'], label='Batteriekosten', color='orange')
+    plt.bar(cost_data_Neb, cost_data.loc[cost_data_Neb]['Rückbaukosten'], bottom=cost_data.loc[cost_data_Neb]['Betriebskosten'] + cost_data.loc[cost_data_Neb]['battery cost'], label='Rückbaukosten', color='red')
     plt.xlabel('Kleinwindenergieanlagenmodell')
     plt.ylabel('Nebenkosten in €')
     plt.ylim(0, (cost_data['Betriebskosten']+cost_data['battery cost']+cost_data['Rückbaukosten']).max().max())
     plt.title('Nebenkostenvergleich der Kleinwindenergieanlagen')
     plt.legend()
-    plt.xticks(rotation=45)
+    plt.xticks(rotation=90)
     plt.tight_layout()
     plt.savefig('data/Nebenkosten.png')
+
+    # Plot für die Nebenkosten und Rückbau einer KWEA.
+    plt.figure(figsize=(15, 10))
+    plt.bar(cost_data_45kW_Neb, cost_data_45kW.loc[cost_data_45kW_Neb]['Betriebskosten'], label='Betriebskosten', color='green')
+    plt.bar(cost_data_45kW_Neb, cost_data_45kW.loc[cost_data_45kW_Neb]['battery cost'], bottom=cost_data_45kW.loc[cost_data_45kW_Neb]['Betriebskosten'], label='Batteriekosten', color='orange')
+    plt.bar(cost_data_45kW_Neb, cost_data_45kW.loc[cost_data_45kW_Neb]['Rückbaukosten'], bottom=cost_data_45kW.loc[cost_data_45kW_Neb]['Betriebskosten'] + cost_data_45kW.loc[cost_data_45kW_Neb]['battery cost'], label='Rückbaukosten', color='red')
+    plt.xlabel('Kleinwindenergieanlagenmodell')
+    plt.ylabel('Nebenkosten in €')
+    plt.title('Nebenkostenvergleich der Kleinwindenergieanlagen größer ' + str(round(p_req)) + " kWh")
+    plt.legend()
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+    plt.savefig('data/Nebenkosten45.png')
 
     # Plot der LCOE über die Nabenhöhe der KWEA. Macht nur dann Sinn wenn wir von einer KWEA unterschiedliche Nabenhöhen haben
     data_hub_sorted = cost_data.sort_values('Hub height:')
@@ -152,7 +214,7 @@ def plot_all(data_tech_path,nr_of_top):
     lcoe_data = cost_data.sort_values('LCOE')
     lcoe_data = lcoe_data.head(nr_of_top)
     
-    turbine_names = lcoe_data['Turbine']
+    turbine_names = lcoe_data.index
     lcoe_values = lcoe_data['LCOE']
     
     plt.figure(figsize=(10, 6))

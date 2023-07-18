@@ -98,8 +98,8 @@ def append_costs_df(capex, lifetime, interest_rate):
     df_cp_curves = pd.read_excel('data/Wetterdaten_Wanna_Szenario_1.xlsx')
 
     df_technical_infos['Gesamtinvestitionskosten'] = df_technical_infos['Rated power:'] * capex + (capex * 0.318) \
-                                                     + df_technical_infos['battery cost'] + 6548
-    df_technical_infos['Betriebskosten'] = ((df_technical_infos['Rated power:'] * capex) * 0.02)
+                                                     + df_technical_infos['battery cost']
+    df_technical_infos['Betriebskosten'] = ((df_technical_infos['Rated power:'] * capex) * 0.02) + 6548
 
     # Berechnet den LCOE mithilfe der Funktion calculate_lcoe und speichert ihn in einer neuen Spalte ab
     for index, row in df_technical_infos.iterrows():

@@ -7,10 +7,11 @@ def get_user_values():
 
     # Funktion zum Speichern der Werte und Beenden der GUI
     def save_values():
-        global roughness_length, p_per_y, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata, data_power_curve_path, data_tech_path, data_wind_path
+
+        global p_req, roughness_length, p_min, single_cell_energy, single_cell_cost, interest_rate, lifetime, capex, save_path_powerdata, data_power_curve_path, data_tech_path, data_wind_path
+        p_req = float(entry_p_req.get())
         roughness_length = float(entry_roughness_length.get())
         p_min = float(entry_p_min.get())
-        p_per_y = float(entry_p_per_y.get())
         single_cell_energy = float(entry_single_cell_energy.get())
         single_cell_cost = float(entry_single_cell_cost.get())
         interest_rate = float(entry_interest_rate.get())
@@ -27,8 +28,13 @@ def get_user_values():
     root.geometry("400x550")  # Vergrößert die Höhe des Fensters
 
     # Label und Eingabefelder
-    label_roughness_length = tk.Label(root, text="Rauhigkeitslänge (m):")
+    label_p_req = tk.Label(root, text="Jahresenergiebedarf (kWh):")
+    label_p_req.pack()
+    entry_p_req = tk.Entry(root)
+    entry_p_req.insert(tk.END, "85000")
+    entry_p_req.pack()
 
+    label_roughness_length = tk.Label(root, text="Rauigkeitslänge (m):")
     label_roughness_length.pack()
     entry_roughness_length = tk.Entry(root)
     entry_roughness_length.insert(tk.END, "0.1")
@@ -40,12 +46,6 @@ def get_user_values():
     entry_p_min = tk.Entry(root)
     entry_p_min.insert(tk.END, "0.300")
     entry_p_min.pack()
-
-    label_p_per_y = tk.Label(root, text="Jahresleistung (kWh):")
-    label_p_per_y.pack()
-    entry_p_per_y = tk.Entry(root)
-    entry_p_per_y.insert(tk.END, "85000")
-    entry_p_per_y.pack()
 
     label_single_cell_energy = tk.Label(root, text="Batteriezellkapazität (kWh):")
     label_single_cell_energy.pack()
@@ -124,9 +124,9 @@ def get_user_values():
 
     # Rückgabe der eingegebenen Werte
     return (
+        float(p_req),
         float(roughness_length),
         float(p_min),
-        float(p_per_y),
         float(single_cell_energy),
         float(single_cell_cost),
         float(interest_rate),
